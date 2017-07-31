@@ -1,0 +1,16 @@
+{
+  "intents": [
+    {
+      "intent": "TwistIntent"
+    },
+    {
+      "intent": "StickIntent"
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    }
+  ]
+}
