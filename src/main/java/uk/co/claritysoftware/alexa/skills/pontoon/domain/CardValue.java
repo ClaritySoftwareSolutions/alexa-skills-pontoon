@@ -5,7 +5,7 @@ package uk.co.claritysoftware.alexa.skills.pontoon.domain;
  */
 public enum CardValue {
 
-	ACE_LOW("Ace", 1),
+	ACE("Ace", 1),
 	TWO("Two", 2),
 	THREE("Three", 3),
 	FOUR("Four", 4),
@@ -17,8 +17,7 @@ public enum CardValue {
 	TEN("Ten", 10),
 	JACK("Jack", 10),
 	QUEEN("Queen", 10),
-	KING("King", 10),
-	ACE_HIGH("Aee", 10);
+	KING("King", 10);
 
 	private final String name;
 

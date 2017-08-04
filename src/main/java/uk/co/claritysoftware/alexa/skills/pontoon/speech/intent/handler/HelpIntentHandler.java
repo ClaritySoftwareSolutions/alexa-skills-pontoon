@@ -6,7 +6,7 @@ import static uk.co.claritysoftware.alexa.skills.speech.factory.RepromptFactory.
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.amazon.speech.json.SpeechletRequestEnvelope;
-import com.amazon.speech.speechlet.CoreSpeechletRequest;
+import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import uk.co.claritysoftware.alexa.skills.speech.intent.IntentHandler;
@@ -19,7 +19,7 @@ public class HelpIntentHandler implements IntentHandler {
 	private static final Logger LOG = LoggerFactory.getLogger(HelpIntentHandler.class);
 
 	@Override
-	public SpeechletResponse handleIntent(final SpeechletRequestEnvelope<? extends CoreSpeechletRequest> requestEnvelope) {
+	public SpeechletResponse handleIntent(final SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
 		LOG.debug("handleIntent requestId={}, sessionId={}", requestEnvelope.getRequest().getRequestId(),
 				requestEnvelope.getSession().getSessionId());
 

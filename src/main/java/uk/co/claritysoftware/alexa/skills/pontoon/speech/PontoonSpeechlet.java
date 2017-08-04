@@ -27,7 +27,7 @@ public class PontoonSpeechlet extends AbstractSpeechlet {
 		LOG.debug("onSessionStarted requestId={}, sessionId={}", requestEnvelope.getRequest().getRequestId(),
 				requestEnvelope.getSession().getSessionId());
 
-		CardDeck cardDeck = shuffledDeckOfCardsWithAceIsLow();
+		CardDeck cardDeck = shuffledDeckOfCards();
 		setCardDeckOnSession(requestEnvelope.getSession(), cardDeck);
 	}
 
@@ -36,8 +36,8 @@ public class PontoonSpeechlet extends AbstractSpeechlet {
 		LOG.debug("onLaunch requestId={}, sessionId={}", requestEnvelope.getRequest().getRequestId(),
 				requestEnvelope.getSession().getSessionId());
 
-		return PontoonIntent.LAUNCH_INTENT.getIntentHandler()
-				.handleIntent(requestEnvelope);
+		return new LaunchHandler(PontoonGameActions.getInstance())
+				.handle(requestEnvelope);
 	}
 
 	@Override
@@ -56,10 +56,9 @@ public class PontoonSpeechlet extends AbstractSpeechlet {
 		return requestEnvelope.getRequest().getIntent().getName();
 	}
 
-	private CardDeck shuffledDeckOfCardsWithAceIsLow() {
-		boolean aceIsHIgh = false;
+	private CardDeck shuffledDeckOfCards() {
 		boolean shuffleDeck = true;
-		return new CardDeck(aceIsHIgh, shuffleDeck);
+		return new CardDeck(shuffleDeck);
 	}
 
 	private void setCardDeckOnSession(Session session, CardDeck cardDeck) {

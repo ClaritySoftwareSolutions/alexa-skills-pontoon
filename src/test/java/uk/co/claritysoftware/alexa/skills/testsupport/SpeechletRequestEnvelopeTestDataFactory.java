@@ -1,7 +1,9 @@
 package uk.co.claritysoftware.alexa.skills.testsupport;
 
+import java.util.Map;
 import com.amazon.speech.json.SpeechletRequestEnvelope;
 import com.amazon.speech.slu.Intent;
+import com.amazon.speech.slu.Slot;
 import com.amazon.speech.speechlet.Context;
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.LaunchRequest;
@@ -34,6 +36,24 @@ public class SpeechletRequestEnvelopeTestDataFactory {
 						.withRequestId("12345")
 						.withIntent(Intent.builder()
 								.withName(intentName)
+								.build())
+						.build())
+				.withSession(Session.builder()
+						.withSessionId("67890")
+						.build())
+				.withContext(Context.builder()
+						.build())
+				.build();
+	}
+
+	public static SpeechletRequestEnvelope<IntentRequest> speechletRequestEnvelopeWithIntentNameAndSlots(final String intentName, final Map<String, Slot> slots) {
+		return SpeechletRequestEnvelope.<IntentRequest> builder()
+				.withVersion("1.0")
+				.withRequest(IntentRequest.builder()
+						.withRequestId("12345")
+						.withIntent(Intent.builder()
+								.withName(intentName)
+								.withSlots(slots)
 								.build())
 						.build())
 				.withSession(Session.builder()

@@ -10,6 +10,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode
 public final class Card {
 
+	private static final int ACE_IS_HIGH_MODIFIER = 9;
+
 	private final CardValue cardValue;
 
 	private final CardSuit cardSuit;
@@ -17,8 +19,11 @@ public final class Card {
 	/**
 	 * @return the numeric value of the card
 	 */
-	public int getValue() {
-		return cardValue.getValue();
+	public int getValue(final boolean aceIsHIgh) {
+		return cardIsAce() && aceIsHIgh ? cardValue.getValue() + ACE_IS_HIGH_MODIFIER : cardValue.getValue();
 	}
 
+	private boolean cardIsAce() {
+		return cardValue.equals(CardValue.ACE);
+	}
 }

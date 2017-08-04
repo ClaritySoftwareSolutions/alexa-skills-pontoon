@@ -1,6 +1,15 @@
 {
   "intents": [
     {
+      "intent": "LaunchIntent",
+      "slots": [
+        {
+          "name": "aceValue",
+          "type": "ACE_VALUES"
+        }
+      ]
+    },
+    {
       "intent": "TwistIntent"
     },
     {

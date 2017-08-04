@@ -2,8 +2,6 @@ package uk.co.claritysoftware.alexa.skills.pontoon.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
-import static uk.co.claritysoftware.alexa.skills.pontoon.domain.CardValue.ACE_HIGH;
-import static uk.co.claritysoftware.alexa.skills.pontoon.domain.CardValue.ACE_LOW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,28 +16,15 @@ import nl.jqno.equalsverifier.Warning;
  */
 public class CardDeckTest {
 
-	private static final List<Card> UNSHUFFLED_FULL_DECK_ACE_LOW;
-
-	private static final List<Card> UNSHUFFLED_FULL_DECK_ACE_HIGH;
+	private static final List<Card> UNSHUFFLED_FULL_DECK;
 
 	private CardDeck cardDeck;
 
 	static {
-		UNSHUFFLED_FULL_DECK_ACE_LOW = new ArrayList<>();
+		UNSHUFFLED_FULL_DECK = new ArrayList<>();
 		for (CardSuit suit : CardSuit.values()) {
 			for (CardValue value : CardValue.values()) {
-				if (value != ACE_HIGH) {
-					UNSHUFFLED_FULL_DECK_ACE_LOW.add(new Card(value, suit));
-				}
-			}
-		}
-
-		UNSHUFFLED_FULL_DECK_ACE_HIGH = new ArrayList<>();
-		for (CardSuit suit : CardSuit.values()) {
-			for (CardValue value : CardValue.values()) {
-				if (value != ACE_LOW) {
-					UNSHUFFLED_FULL_DECK_ACE_HIGH.add(new Card(value, suit));
-				}
+				UNSHUFFLED_FULL_DECK.add(new Card(value, suit));
 			}
 		}
 	}
@@ -53,34 +38,20 @@ public class CardDeckTest {
 
 		// Then
 		List<Card> cards = cardDeck.getCards();
-		assertThat(cards).containsExactlyElementsOf(UNSHUFFLED_FULL_DECK_ACE_LOW);
-	}
-
-	@Test
-	public void shouldConstructGivenAceIsHigh() {
-		// Given
-		boolean aceIsHigh = true;
-
-		// When
-		cardDeck = new CardDeck(aceIsHigh);
-
-		// Then
-		List<Card> cards = cardDeck.getCards();
-		assertThat(cards).containsExactlyElementsOf(UNSHUFFLED_FULL_DECK_ACE_HIGH);
+		assertThat(cards).containsExactlyElementsOf(UNSHUFFLED_FULL_DECK);
 	}
 
 	@Test
 	public void shouldConstructGivenShuffleIsTrue() {
 		// Given
-		boolean aceIsHigh = true;
 		boolean shuffleDeck = true;
 
 		// When
-		cardDeck = new CardDeck(aceIsHigh, shuffleDeck);
+		cardDeck = new CardDeck(shuffleDeck);
 
 		// Then
 		List<Card> cards = cardDeck.getCards();
-		assertThat(cards).containsExactlyInAnyOrder(UNSHUFFLED_FULL_DECK_ACE_HIGH.toArray(new Card[UNSHUFFLED_FULL_DECK_ACE_LOW.size()]));
+		assertThat(cards).containsExactlyInAnyOrder(UNSHUFFLED_FULL_DECK.toArray(new Card[UNSHUFFLED_FULL_DECK.size()]));
 	}
 
 	@Test
@@ -94,8 +65,8 @@ public class CardDeckTest {
 		cardDeck.shuffle();
 
 		// Then
-		assertThat(cardsBeforeShuffle).containsExactlyElementsOf(UNSHUFFLED_FULL_DECK_ACE_LOW);
-		assertThat(cards).containsExactlyInAnyOrder(UNSHUFFLED_FULL_DECK_ACE_LOW.toArray(new Card[UNSHUFFLED_FULL_DECK_ACE_LOW.size()]));
+		assertThat(cardsBeforeShuffle).containsExactlyElementsOf(UNSHUFFLED_FULL_DECK);
+		assertThat(cards).containsExactlyInAnyOrder(UNSHUFFLED_FULL_DECK.toArray(new Card[UNSHUFFLED_FULL_DECK.size()]));
 	}
 
 	@Test
@@ -163,13 +134,13 @@ public class CardDeckTest {
 
 		// When
 		try {
-			cards.add(new Card(CardValue.ACE_LOW, CardSuit.SPADES));
+			cards.remove(0);
 
 			fail("Was expecting an UnsupportedOperationException");
 		}
 		// Then
-		catch (UnsupportedOperationException e) {
-
+		catch (Exception e) {
+			assertThat(e.getClass()).isEqualTo(UnsupportedOperationException.class);
 		}
 	}
 }

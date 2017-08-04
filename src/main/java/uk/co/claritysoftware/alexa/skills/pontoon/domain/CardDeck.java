@@ -1,8 +1,5 @@
 package uk.co.claritysoftware.alexa.skills.pontoon.domain;
 
-import static uk.co.claritysoftware.alexa.skills.pontoon.domain.CardValue.ACE_HIGH;
-import static uk.co.claritysoftware.alexa.skills.pontoon.domain.CardValue.ACE_LOW;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,8 +16,6 @@ public class CardDeck {
 
 	private static final int CARD_ON_TOP_OF_DECK = 0;
 
-	private static final boolean DEFAULT_ACE_IS_HIGH = false;
-
 	private static final boolean DEFAULT_SHUFFLE_ON_CREATION = false;
 
 	private final List<Card> cards;
@@ -29,33 +24,19 @@ public class CardDeck {
 	 * Construct a populated deck of cards where ace is low and the deck is not shuffled
 	 */
 	public CardDeck() {
-		this(DEFAULT_ACE_IS_HIGH, DEFAULT_SHUFFLE_ON_CREATION);
+		this(DEFAULT_SHUFFLE_ON_CREATION);
 	}
 
 	/**
-	 * Construct a populated deck of cards where the value of ace is high or low as specified by the parameter,
-	 * and the deck is not shuffled
+	 * Construct a populated deck of cards where the deck is shuffled as specified by the parameter
 	 *
-	 * @param aceIsHigh boolean to determine whether ace should he high
-	 */
-	public CardDeck(boolean aceIsHigh) {
-		this(aceIsHigh, DEFAULT_SHUFFLE_ON_CREATION);
-	}
-
-	/**
-	 * Construct a populated deck of cards where the value of ace is high or low as specified by the parameter,
-	 * and the deck is shuffled as specified by the parameter
-	 *
-	 * @param aceIsHigh         boolean to determine whether ace should he high
 	 * @param shuffleOnCreation boolean to determine whether to shuffle the deck
 	 */
-	public CardDeck(boolean aceIsHigh, boolean shuffleOnCreation) {
+	public CardDeck(boolean shuffleOnCreation) {
 		cards = new ArrayList<>();
 		for (CardSuit suit : CardSuit.values()) {
 			for (CardValue value : CardValue.values()) {
-				if ((value != ACE_HIGH && value != ACE_LOW) || (value == ACE_HIGH && aceIsHigh) || (value == ACE_LOW && !aceIsHigh)) {
-					cards.add(new Card(value, suit));
-				}
+				cards.add(new Card(value, suit));
 			}
 		}
 
