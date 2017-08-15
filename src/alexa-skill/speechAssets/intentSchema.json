@@ -1,7 +1,7 @@
 {
   "intents": [
     {
-      "intent": "LaunchIntent",
+      "intent": "StartGameIntent",
       "slots": [
         {
           "name": "aceValue",

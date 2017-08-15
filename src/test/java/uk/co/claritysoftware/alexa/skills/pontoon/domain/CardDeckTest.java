@@ -120,7 +120,7 @@ public class CardDeckTest {
 		ObjectMapper objectMapper = new ObjectMapper();
 
 		// When
-		boolean canSerialize = objectMapper.canSerialize(Card.class);
+		boolean canSerialize = objectMapper.canSerialize(CardDeck.class);
 
 		// Then
 		assertThat(canSerialize).isTrue();

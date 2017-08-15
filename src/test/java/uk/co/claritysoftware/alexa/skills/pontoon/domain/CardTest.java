@@ -3,6 +3,7 @@ package uk.co.claritysoftware.alexa.skills.pontoon.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
@@ -47,7 +48,7 @@ public class CardTest {
 		Card card = new Card(CardValue.ACE, CardSuit.CLUBS);
 		boolean aceIsHigh = true;
 
-		int expectedValue = 10;
+		int expectedValue = 11;
 
 		// When
 		int value = card.getValue(aceIsHigh);
@@ -77,4 +78,17 @@ public class CardTest {
 				.forClass(Card.class)
 				.verify();
 	}
+
+	@Test
+	public void shouldBeAbleToSerialize() throws Exception {
+		// Given
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		// When
+		boolean canSerialize = objectMapper.canSerialize(Card.class);
+
+		// Then
+		assertThat(canSerialize).isTrue();
+	}
+
 }

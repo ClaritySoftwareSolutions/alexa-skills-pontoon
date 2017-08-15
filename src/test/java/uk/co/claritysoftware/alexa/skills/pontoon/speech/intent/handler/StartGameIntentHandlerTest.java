@@ -1,6 +1,5 @@
 package uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.handler;
 
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.co.claritysoftware.alexa.skills.testsupport.SpeechletRequestEnvelopeTestDataFactory.speechletRequestEnvelopeWithIntentName;
 import static uk.co.claritysoftware.alexa.skills.testsupport.SpeechletRequestEnvelopeTestDataFactory.speechletRequestEnvelopeWithIntentNameAndSlots;
@@ -16,6 +15,7 @@ import com.amazon.speech.json.SpeechletRequestEnvelope;
 import com.amazon.speech.slu.Slot;
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
+import uk.co.claritysoftware.alexa.skills.pontoon.session.SessionSupport;
 import uk.co.claritysoftware.alexa.skills.pontoon.speech.PontoonGameActions;
 
 /**
@@ -26,6 +26,9 @@ public class StartGameIntentHandlerTest {
 
 	@Mock
 	private PontoonGameActions pontoonGameActions;
+
+	@Mock
+	private SessionSupport sessionSupport;
 
 	@InjectMocks
 	private StartGameIntentHandler intentHandler;
@@ -40,7 +43,8 @@ public class StartGameIntentHandlerTest {
 		intentHandler.handleIntent(requestEnvelope);
 
 		// Then
-		verify(pontoonGameActions, times(1)).dealInitialHand(session, false);
+		verify(pontoonGameActions).dealInitialHand(session);
+		verify(sessionSupport).setAceIsHighOnSession(session, false);
 	}
 
 	@Test
@@ -57,7 +61,8 @@ public class StartGameIntentHandlerTest {
 		intentHandler.handleIntent(requestEnvelope);
 
 		// Then
-		verify(pontoonGameActions, times(1)).dealInitialHand(session, false);
+		verify(pontoonGameActions).dealInitialHand(session);
+		verify(sessionSupport).setAceIsHighOnSession(session, false);
 	}
 
 	@Test
@@ -74,7 +79,8 @@ public class StartGameIntentHandlerTest {
 		intentHandler.handleIntent(requestEnvelope);
 
 		// Then
-		verify(pontoonGameActions, times(1)).dealInitialHand(session, true);
+		verify(pontoonGameActions).dealInitialHand(session);
+		verify(sessionSupport).setAceIsHighOnSession(session, true);
 	}
 
 }

@@ -1,5 +1,6 @@
-LaunchIntent to start a game where ace is {aceValue}
-LaunchIntent with aces {aceValue}
-LaunchIntent where ace is {aceValue}
+StartGameIntent to start a game where ace is {aceValue}
+StartGameIntent with aces {aceValue}
+StartGameIntent where ace is {aceValue}
+TwistIntent twist
 
 

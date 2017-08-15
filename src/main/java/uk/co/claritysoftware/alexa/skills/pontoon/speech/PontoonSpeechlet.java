@@ -5,11 +5,11 @@ import org.slf4j.LoggerFactory;
 import com.amazon.speech.json.SpeechletRequestEnvelope;
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.LaunchRequest;
-import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SessionStartedRequest;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.speechlet.SpeechletV2;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.CardDeck;
+import uk.co.claritysoftware.alexa.skills.pontoon.session.SessionSupport;
 import uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.PontoonIntent;
 import uk.co.claritysoftware.alexa.skills.speech.AbstractSpeechlet;
 
@@ -18,9 +18,13 @@ import uk.co.claritysoftware.alexa.skills.speech.AbstractSpeechlet;
  */
 public class PontoonSpeechlet extends AbstractSpeechlet {
 
-	public static final String CARD_DECK = "cardDeck";
-
 	private static final Logger LOG = LoggerFactory.getLogger(PontoonSpeechlet.class);
+
+	private final SessionSupport sessionSupport;
+
+	public PontoonSpeechlet(final SessionSupport sessionSupport) {
+		this.sessionSupport = sessionSupport;
+	}
 
 	@Override
 	public void onSessionStarted(SpeechletRequestEnvelope<SessionStartedRequest> requestEnvelope) {
@@ -28,7 +32,7 @@ public class PontoonSpeechlet extends AbstractSpeechlet {
 				requestEnvelope.getSession().getSessionId());
 
 		CardDeck cardDeck = shuffledDeckOfCards();
-		setCardDeckOnSession(requestEnvelope.getSession(), cardDeck);
+		sessionSupport.setCardDeckOnSession(requestEnvelope.getSession(), cardDeck);
 	}
 
 	@Override
@@ -36,7 +40,7 @@ public class PontoonSpeechlet extends AbstractSpeechlet {
 		LOG.debug("onLaunch requestId={}, sessionId={}", requestEnvelope.getRequest().getRequestId(),
 				requestEnvelope.getSession().getSessionId());
 
-		return new LaunchHandler(PontoonGameActions.getInstance())
+		return new LaunchHandler(PontoonGameActions.getInstance(), SessionSupport.getInstance())
 				.handle(requestEnvelope);
 	}
 
@@ -59,9 +63,5 @@ public class PontoonSpeechlet extends AbstractSpeechlet {
 	private CardDeck shuffledDeckOfCards() {
 		boolean shuffleDeck = true;
 		return new CardDeck(shuffleDeck);
-	}
-
-	private void setCardDeckOnSession(Session session, CardDeck cardDeck) {
-		session.setAttribute(CARD_DECK, cardDeck);
 	}
 }
