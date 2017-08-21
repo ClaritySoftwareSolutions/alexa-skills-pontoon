@@ -1,7 +1,9 @@
 package uk.co.claritysoftware.alexa.skills.pontoon.speech;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.util.reflection.Whitebox.setInternalState;
 import static uk.co.claritysoftware.alexa.skills.testsupport.assertj.RepromptAssert.assertThat;
@@ -368,6 +370,72 @@ public class PontoonGameActionsTest {
 				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
 		verify(session).setAttribute("hand", handJson(FIVE_OF_CLUBS, TEN_OF_HEARTS, QUEEN_OF_HEARTS));
 		verify(session).setAttribute("cardDeck", emptyCardDeckJson());
+	}
+
+	@Test
+	public void shouldStickGivenHandWithAcesAndAceIsLow() throws Exception {
+		// Given
+		Session session = session();
+
+		String serializedHand = handJson(FIVE_OF_CLUBS, ACE_OF_CLUBS);
+
+		given(session.getAttribute("aceIsHigh")).willReturn(false);
+		given(session.getAttribute("hand")).willReturn(serializedHand);
+
+		String expectedPlainTextOutputSpeech = "Your final score is 6 with a hand of the Five of CLUBS, and the Ace of CLUBS. Ace is low.";
+
+		// When
+		SpeechletResponse speechletResponse = pontoonGameActions.stick(session);
+
+		// Then
+		assertThat(speechletResponse)
+				.isATellResponse()
+				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
+		verify(session, never()).setAttribute(any(), any());
+	}
+
+	@Test
+	public void shouldStickGivenHandWithAcesAndAceIsHigh() throws Exception {
+		// Given
+		Session session = session();
+
+		String serializedHand = handJson(FIVE_OF_CLUBS, ACE_OF_CLUBS);
+
+		given(session.getAttribute("aceIsHigh")).willReturn(true);
+		given(session.getAttribute("hand")).willReturn(serializedHand);
+
+		String expectedPlainTextOutputSpeech = "Your final score is 16 with a hand of the Five of CLUBS, and the Ace of CLUBS. Ace is high.";
+
+		// When
+		SpeechletResponse speechletResponse = pontoonGameActions.stick(session);
+
+		// Then
+		assertThat(speechletResponse)
+				.isATellResponse()
+				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
+		verify(session, never()).setAttribute(any(), any());
+	}
+
+	@Test
+	public void shouldStick() throws Exception {
+		// Given
+		Session session = session();
+
+		String serializedHand = handJson(FIVE_OF_CLUBS, TEN_OF_HEARTS);
+
+		given(session.getAttribute("aceIsHigh")).willReturn(true);
+		given(session.getAttribute("hand")).willReturn(serializedHand);
+
+		String expectedPlainTextOutputSpeech = "Your final score is 15 with a hand of the Five of CLUBS, and the Ten of HEARTS.";
+
+		// When
+		SpeechletResponse speechletResponse = pontoonGameActions.stick(session);
+
+		// Then
+		assertThat(speechletResponse)
+				.isATellResponse()
+				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
+		verify(session, never()).setAttribute(any(), any());
 	}
 
 	private Session session() {

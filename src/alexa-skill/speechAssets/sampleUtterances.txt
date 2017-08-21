@@ -2,5 +2,6 @@ StartGameIntent to start a game where ace is {aceValue}
 StartGameIntent with aces {aceValue}
 StartGameIntent where ace is {aceValue}
 TwistIntent twist
+StickIntent stick
 
 

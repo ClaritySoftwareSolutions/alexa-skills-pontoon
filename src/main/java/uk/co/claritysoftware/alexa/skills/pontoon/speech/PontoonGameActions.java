@@ -39,10 +39,20 @@ public class PontoonGameActions {
 	}
 
 	/**
+	 * Deals the initial hand of 2 cards from the {@link CardDeck} in the specified {@link Session}
+	 *
+	 * @param session the {@link Session} containing the {@link CardDeck} and ace is high flag
+	 * @return a {@link SpeechletResponse} describing the dealt hand and the current score
+	 */
+	public SpeechletResponse dealInitialHand(final Session session) {
+		boolean aceIsHigh = sessionSupport.getAceIsHighFromSession(session);
+		return dealInitialHand(session, aceIsHigh);
+	}
+
+	/**
 	 * Performs the twist action by dealing another card from the {@ink CardDeck}
 	 *
 	 * @param session the {@link Session} containing the {@link CardDeck}, the current {@link Hand} and ace is high flag
-	 * @param session
 	 * @return a {@link SpeechletResponse} describing the dealt hand and the current score
 	 */
 	public SpeechletResponse twist(final Session session) {
@@ -63,14 +73,18 @@ public class PontoonGameActions {
 	}
 
 	/**
-	 * Deals the initial hand of 2 cards from the {@link CardDeck} in the specified {@link Session}
+	 * Performs the stick action by ending the game
 	 *
-	 * @param session the {@link Session} containing the {@link CardDeck} and ace is high flag
+	 * @param session the {@link Session} containing the {@link CardDeck}, the current {@link Hand} and ace is high flag
 	 * @return a {@link SpeechletResponse} describing the dealt hand and the current score
 	 */
-	public SpeechletResponse dealInitialHand(final Session session) {
+	public SpeechletResponse stick(final Session session) {
+		LOG.debug("stick for session id {}", session.getSessionId());
+
 		boolean aceIsHigh = sessionSupport.getAceIsHighFromSession(session);
-		return dealInitialHand(session, aceIsHigh);
+		Hand hand = sessionSupport.getHandFromSession(session);
+
+		return stickSpeechletResponse(hand, aceIsHigh);
 	}
 
 	private SpeechletResponse dealInitialHand(final Session session, final boolean aceIsHigh) {
@@ -200,6 +214,23 @@ public class PontoonGameActions {
 
 		final PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
 		speech.setText(speechText.toString());
+
+		LOG.debug("dealInitialHand response {}", speech.getText());
+		return newTellResponse(speech);
+	}
+
+	private SpeechletResponse stickSpeechletResponse(final Hand hand, final boolean aceIsHigh) {
+		List<Card> cardsInHand = hand.getCards();
+		int score = hand.getScore(aceIsHigh);
+
+		StringBuffer speechText = new StringBuffer("Your final score is ").append(score)
+				.append(" with a hand of")
+				.append(cardListSentence(cardsInHand));
+
+		speechText.append(handContainsAnAce(cardsInHand) ? String.format("Ace is %s.", aceIsHigh ? "high" : "low") : "");
+
+		final PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+		speech.setText(speechText.toString().trim());
 
 		LOG.debug("dealInitialHand response {}", speech.getText());
 		return newTellResponse(speech);

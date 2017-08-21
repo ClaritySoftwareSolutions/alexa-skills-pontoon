@@ -6,6 +6,7 @@ import uk.co.claritysoftware.alexa.skills.pontoon.session.SessionSupport;
 import uk.co.claritysoftware.alexa.skills.pontoon.speech.PontoonGameActions;
 import uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.handler.HelpIntentHandler;
 import uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.handler.StartGameIntentHandler;
+import uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.handler.StickIntentHandler;
 import uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.handler.TwistIntentHandler;
 import uk.co.claritysoftware.alexa.skills.speech.intent.AlexaIntent;
 import uk.co.claritysoftware.alexa.skills.speech.intent.IntentHandler;
@@ -18,6 +19,8 @@ public enum PontoonIntent implements AlexaIntent {
 	START_GAME_INTENT("StartGameIntent", new StartGameIntentHandler(PontoonGameActions.getInstance(), SessionSupport.getInstance())),
 
 	TWIST_INTENT("TwistIntent", new TwistIntentHandler(PontoonGameActions.getInstance())),
+
+	STICK_INTENT("StickIntent", new StickIntentHandler(PontoonGameActions.getInstance())),
 
 	HELP_INTENT("AMAZON.HelpIntent", new HelpIntentHandler());
 
