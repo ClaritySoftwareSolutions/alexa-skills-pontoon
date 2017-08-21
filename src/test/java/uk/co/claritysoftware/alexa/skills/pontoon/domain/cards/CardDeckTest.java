@@ -1,4 +1,4 @@
-package uk.co.claritysoftware.alexa.skills.pontoon.domain;
+package uk.co.claritysoftware.alexa.skills.pontoon.domain.cards;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -7,6 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.Card;
+import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardDeck;
+import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardSuit;
+import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardValue;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;

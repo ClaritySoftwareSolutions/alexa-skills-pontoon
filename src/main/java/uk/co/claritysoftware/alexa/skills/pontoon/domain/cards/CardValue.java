@@ -1,4 +1,4 @@
-package uk.co.claritysoftware.alexa.skills.pontoon.domain;
+package uk.co.claritysoftware.alexa.skills.pontoon.domain.cards;
 
 /**
  * Enum of the values of cards

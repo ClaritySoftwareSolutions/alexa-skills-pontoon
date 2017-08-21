@@ -9,8 +9,8 @@ import java.util.Collections;
 import org.junit.Test;
 import com.amazon.speech.speechlet.Session;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import uk.co.claritysoftware.alexa.skills.pontoon.domain.CardDeck;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.Hand;
+import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardDeck;
 
 /**
  * Unit test class for {@link SessionSupport}

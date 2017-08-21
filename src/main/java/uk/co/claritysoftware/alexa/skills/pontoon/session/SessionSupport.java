@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory;
 import com.amazon.speech.speechlet.Session;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import uk.co.claritysoftware.alexa.skills.pontoon.domain.CardDeck;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.Hand;
+import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardDeck;
 
 /**
  * Singleton class providing utility methods concerning @{link S}

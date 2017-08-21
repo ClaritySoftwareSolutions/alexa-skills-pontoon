@@ -1,43 +1,27 @@
 package uk.co.claritysoftware.alexa.skills.pontoon.domain;
 
 import java.math.BigInteger;
-import java.util.Collections;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.AbstractHand;
+import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.Card;
 
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 /**
- * Immutable class describing the hand current hand of cards
+ * Specialisation of {@link AbstractHand} for a hand of cards for a game of pontoon.
  */
 @Value
-public final class Hand {
+@EqualsAndHashCode(callSuper = true)
+public final class Hand extends AbstractHand {
 
-	private final List<Card> cards;
+	private static final int PONTOON_WIN_SCORE = 21;
 
 	@JsonCreator
 	public Hand(@JsonProperty("cards") final List<Card> cards) {
-		this.cards = cards;
-	}
-
-	/**
-	 * Get a list containing this instances {@link Card Cards}. The returned list is deliberately unmodifiable so that all
-	 * mutation operations are via controlled methods
-	 *
-	 * @return an unmodifiable list containing this instances {@link Card Cards}.
-	 */
-	public List<Card> getCards() {
-		return Collections.unmodifiableList(cards);
-	}
-
-	/**
-	 * Adds a card to the current hand
-	 *
-	 * @param card the {@link Card} to add to the hand
-	 */
-	public void addCard(final Card card) {
-		cards.add(card);
+		super(cards);
 	}
 
 	/**
@@ -47,9 +31,41 @@ public final class Hand {
 	 * @return the scoe of the current hand
 	 */
 	public int getScore(final boolean aceIsHigh) {
-		return cards.stream()
+		return getCards().stream()
 				.map(currentCard -> BigInteger.valueOf(currentCard.getValue(aceIsHigh)))
 				.reduce(BigInteger.ZERO, BigInteger::add)
 				.intValue();
 	}
+
+	/**
+	 * Determines if the hand is 'bust' based on the value of the cards, and the specified aceIsHigh value
+	 *
+	 * @param aceIsHigh boolean to indicate whether aces should be consider high or not
+	 * @return true if the value of the hand is 'bust'
+	 */
+	public boolean isBust(final boolean aceIsHigh) {
+		return getScore(aceIsHigh) > PONTOON_WIN_SCORE;
+	}
+
+	/**
+	 * Determines if the hand is a winning score based on the value of the cards, and the specified aceIsHigh value
+	 *
+	 * @param aceIsHigh boolean to indicate whether aces should be consider high or not
+	 * @return true if the value of the hand is a winning hand
+	 */
+	public boolean isWin(final boolean aceIsHigh) {
+		return getScore(aceIsHigh) == PONTOON_WIN_SCORE;
+	}
+
+	/**
+	 * Determines if the hand is still in play based on the value of the cards, and the specified aceIsHigh value
+	 * 'Still in play' means the hand is not bust and is not a winning hand.
+	 *
+	 * @param aceIsHigh boolean to indicate whether aces should be consider high or not
+	 * @return true if the value of the hand means the hans is still in play
+	 */
+	public boolean isStillInPlay(final boolean aceIsHigh) {
+		return getScore(aceIsHigh) < PONTOON_WIN_SCORE;
+	}
+
 }

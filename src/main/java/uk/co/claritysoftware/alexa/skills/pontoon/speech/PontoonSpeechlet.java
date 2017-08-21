@@ -8,7 +8,7 @@ import com.amazon.speech.speechlet.LaunchRequest;
 import com.amazon.speech.speechlet.SessionStartedRequest;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.speechlet.SpeechletV2;
-import uk.co.claritysoftware.alexa.skills.pontoon.domain.CardDeck;
+import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardDeck;
 import uk.co.claritysoftware.alexa.skills.pontoon.session.SessionSupport;
 import uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.PontoonIntent;
 import uk.co.claritysoftware.alexa.skills.speech.AbstractSpeechlet;

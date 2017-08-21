@@ -26,10 +26,10 @@ import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SessionStartedRequest;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import uk.co.claritysoftware.alexa.skills.pontoon.domain.Card;
-import uk.co.claritysoftware.alexa.skills.pontoon.domain.CardDeck;
-import uk.co.claritysoftware.alexa.skills.pontoon.domain.CardSuit;
-import uk.co.claritysoftware.alexa.skills.pontoon.domain.CardValue;
+import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.Card;
+import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardDeck;
+import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardSuit;
+import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardValue;
 import uk.co.claritysoftware.alexa.skills.pontoon.session.SessionSupport;
 
 /**
