@@ -1,10 +1,8 @@
 package uk.co.claritysoftware.alexa.skills.speech.intent;
 
 /**
- * Interface defining Alexa Intents
+ * Simple marker interface defining Alexa Intents
  */
 public interface AlexaIntent {
-
-	IntentHandler getIntentHandler();
 
 }

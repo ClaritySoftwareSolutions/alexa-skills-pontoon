@@ -3,6 +3,7 @@ package uk.co.claritysoftware.alexa.skills.pontoon.session;
 import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import com.amazon.speech.speechlet.Session;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,29 +11,20 @@ import uk.co.claritysoftware.alexa.skills.pontoon.domain.Hand;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardDeck;
 
 /**
- * Singleton class providing utility methods concerning @{link S}
+ * Class providing utility methods concerning {@link Session}
  */
+@Service
 public class SessionSupport {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SessionSupport.class);
 
-	public static final String CARD_DECK = "cardDeck";
+	private static final String CARD_DECK = "cardDeck";
 
 	private static final String HAND = "hand";
 
 	private static final String ACE_IS_HIGH = "aceIsHigh";
 
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-	private static final SessionSupport INSTANCE = new SessionSupport();
-
-	private SessionSupport() {
-
-	}
-
-	public static SessionSupport getInstance() {
-		return INSTANCE;
-	}
 
 	public void setCardDeckOnSession(final Session session, final CardDeck cardDeck) {
 		session.setAttribute(CARD_DECK, serializeCardDeck(cardDeck));

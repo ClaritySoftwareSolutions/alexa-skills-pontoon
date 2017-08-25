@@ -19,7 +19,7 @@ public class SessionSupportTest {
 
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-	private SessionSupport sessionSupport = SessionSupport.getInstance();
+	private SessionSupport sessionSupport = new SessionSupport();
 
 	@Test
 	public void shouldSetCardDeckOnSession() throws Exception {

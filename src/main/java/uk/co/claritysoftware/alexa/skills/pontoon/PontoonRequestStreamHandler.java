@@ -1,5 +1,7 @@
 package uk.co.claritysoftware.alexa.skills.pontoon;
 
+import static uk.co.claritysoftware.alexa.skills.pontoon.Application.getBean;
+
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -7,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.amazon.speech.speechlet.lambda.SpeechletRequestStreamHandler;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
-import uk.co.claritysoftware.alexa.skills.pontoon.session.SessionSupport;
 import uk.co.claritysoftware.alexa.skills.pontoon.speech.PontoonSpeechlet;
 
 /**
@@ -20,7 +21,7 @@ public final class PontoonRequestStreamHandler extends SpeechletRequestStreamHan
 	private static final String APPLICATION_IDS = "com_amazon_speech_speechlet_servlet_supportedApplicationIds";
 
 	public PontoonRequestStreamHandler() {
-		super(new PontoonSpeechlet(SessionSupport.getInstance()), applicationIds());
+		super(getBean(PontoonSpeechlet.class), applicationIds());
 	}
 
 	private static Set<String> applicationIds() {

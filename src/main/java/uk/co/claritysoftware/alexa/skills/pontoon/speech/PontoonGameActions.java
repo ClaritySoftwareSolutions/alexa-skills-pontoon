@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
@@ -20,22 +22,18 @@ import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardDeck;
 import uk.co.claritysoftware.alexa.skills.pontoon.session.SessionSupport;
 
 /**
- * Singleton class to perform the actions of a game of pontoon
+ * Class to perform the actions of a game of pontoon
  */
+@Service
 public class PontoonGameActions {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PontoonGameActions.class);
 
-	private static final PontoonGameActions INSTANCE = new PontoonGameActions(SessionSupport.getInstance());
-
 	private final SessionSupport sessionSupport;
 
-	private PontoonGameActions(final SessionSupport sessionSupport) {
+	@Autowired
+	public PontoonGameActions(final SessionSupport sessionSupport) {
 		this.sessionSupport = sessionSupport;
-	}
-
-	public static PontoonGameActions getInstance() {
-		return INSTANCE;
 	}
 
 	/**

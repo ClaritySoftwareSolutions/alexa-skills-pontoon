@@ -92,4 +92,16 @@ public class SpeechletRequestEnvelopeTestDataFactory {
 				.build();
 	}
 
+	public static SpeechletRequestEnvelope<LaunchRequest> launchSpeechletRequestEnvelopeWithSession(final Session session) {
+		return SpeechletRequestEnvelope.<LaunchRequest> builder()
+				.withVersion("1.0")
+				.withRequest(LaunchRequest.builder()
+						.withRequestId("12345")
+						.build())
+				.withSession(session)
+				.withContext(Context.builder()
+						.build())
+				.build();
+	}
+
 }

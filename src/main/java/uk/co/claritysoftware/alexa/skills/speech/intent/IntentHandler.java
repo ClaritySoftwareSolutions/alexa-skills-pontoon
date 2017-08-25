@@ -6,7 +6,7 @@ import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletResponse;
 
 /**
- * Dice Roller Intent Handler interface
+ * Intent Handler interface
  */
 public interface IntentHandler {
 
@@ -17,4 +17,12 @@ public interface IntentHandler {
 	 * @return a {@link SpeechletResponse} that is the result of handling the intent
 	 */
 	SpeechletResponse handleIntent(SpeechletRequestEnvelope<IntentRequest> requestEnvelope);
+
+	/**
+	 * Determines if this instance of {@link IntentHandler} can be used to handle the specified {@link AlexaIntent}
+	 *
+	 * @param alexaIntent the {@link AlexaIntent} that should be handled
+	 * @return true if the {@link IntentHandler} handles the specified {@link AlexaIntent}
+	 */
+	boolean handles(AlexaIntent alexaIntent);
 }

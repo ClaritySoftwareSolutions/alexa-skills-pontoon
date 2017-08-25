@@ -1,5 +1,6 @@
 package uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.handler;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static uk.co.claritysoftware.alexa.skills.testsupport.SpeechletRequestEnvelopeTestDataFactory.speechletRequestEnvelopeWithIntentName;
 
@@ -12,6 +13,7 @@ import com.amazon.speech.json.SpeechletRequestEnvelope;
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
 import uk.co.claritysoftware.alexa.skills.pontoon.speech.PontoonGameActions;
+import uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.PontoonIntent;
 
 /**
  * Unit test class for {@link TwistIntentHandler}
@@ -37,4 +39,29 @@ public class TwistIntentHandlerTest {
 		// Then
 		verify(pontoonGameActions).twist(session);
 	}
+
+	@Test
+	public void shouldDetermineIfHandlesGivenTwistIntent() {
+		// Given
+		PontoonIntent intent = PontoonIntent.TWIST_INTENT;
+
+		// When
+		boolean handles = intentHandler.handles(intent);
+
+		// Then
+		assertThat(handles).isTrue();
+	}
+
+	@Test
+	public void shouldDetermineIfHandlesGivenNonTwistIntent() {
+		// Given
+		PontoonIntent intent = PontoonIntent.HELP_INTENT;
+
+		// When
+		boolean handles = intentHandler.handles(intent);
+
+		// Then
+		assertThat(handles).isFalse();
+	}
+
 }

@@ -2,18 +2,15 @@ package uk.co.claritysoftware.alexa.skills.pontoon.speech;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.internal.util.reflection.Whitebox.setInternalState;
 import static uk.co.claritysoftware.alexa.skills.testsupport.SpeechletRequestEnvelopeTestDataFactory.launchSpeechletRequestEnvelope;
 import static uk.co.claritysoftware.alexa.skills.testsupport.SpeechletRequestEnvelopeTestDataFactory.sessionStartedSpeechletRequestEnvelope;
 import static uk.co.claritysoftware.alexa.skills.testsupport.SpeechletRequestEnvelopeTestDataFactory.speechletRequestEnvelopeWithIntentName;
-import static uk.co.claritysoftware.alexa.skills.testsupport.assertj.SpeechletResponseAssert.assertThat;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.regex.Pattern;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -25,12 +22,10 @@ import com.amazon.speech.speechlet.LaunchRequest;
 import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SessionStartedRequest;
 import com.amazon.speech.speechlet.SpeechletResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.Card;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardDeck;
-import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardSuit;
-import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardValue;
 import uk.co.claritysoftware.alexa.skills.pontoon.session.SessionSupport;
+import uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.PontoonIntent;
+import uk.co.claritysoftware.alexa.skills.speech.intent.IntentHandler;
 
 /**
  * Unit test class for {@link PontoonSpeechlet}
@@ -38,10 +33,11 @@ import uk.co.claritysoftware.alexa.skills.pontoon.session.SessionSupport;
 @RunWith(MockitoJUnitRunner.class)
 public class PontoonSpeechletTest {
 
-	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
 	@Mock
 	private SessionSupport sessionSupport;
+
+	@Mock
+	private HandlerFactory handlerFactory;
 
 	@InjectMocks
 	private PontoonSpeechlet speechlet;
@@ -62,40 +58,38 @@ public class PontoonSpeechletTest {
 	@Test
 	public void shouldOnLaunch() throws Exception {
 		// Given
-		CardDeck cardDeck = new CardDeck();
-		Card card1 = new Card(CardValue.FIVE, CardSuit.CLUBS);
-		Card card2 = new Card(CardValue.QUEEN, CardSuit.HEARTS);
-		setInternalState(cardDeck, "cards", new ArrayList(Arrays.asList(card1, card2)));
-		String serializedCardDeck = OBJECT_MAPPER.writeValueAsString(cardDeck);
-
 		SpeechletRequestEnvelope<LaunchRequest> requestEnvelope = launchSpeechletRequestEnvelope();
-		requestEnvelope.getSession().setAttribute("cardDeck", serializedCardDeck);
 
-		Pattern expectedPlainTextOutputSpeech = Pattern.compile("^I have dealt you the [A-Z][a-z]+ of [A-Z]+, and the [A-Z][a-z]* of [A-Z]+. Your score is \\d\\d?. What would you like to do\\?");
+		LaunchHandler launchHandler = mock(LaunchHandler.class);
+		given(handlerFactory.getLaunchHandler()).willReturn(launchHandler);
+
+		SpeechletResponse expectedSpeechletResponse = mock(SpeechletResponse.class);
+		given(launchHandler.handle(requestEnvelope)).willReturn(expectedSpeechletResponse);
 
 		// When
 		SpeechletResponse speechletResponse = speechlet.onLaunch(requestEnvelope);
 
 		// Then
-		assertThat(speechletResponse)
-				.isAnAskResponse()
-				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
+		assertThat(speechletResponse).isEqualTo(expectedSpeechletResponse);
 	}
 
 	@Test
 	public void shouldOnIntentGivenValidIntentName() {
 		// Given
+		PontoonIntent intent = PontoonIntent.HELP_INTENT;
 		SpeechletRequestEnvelope<IntentRequest> requestEnvelope = speechletRequestEnvelopeWithIntentName("AMAZON.HelpIntent");
 
-		String expectedPlainTextOutputSpeech = "You can play Pontoon with me. What would you like me to do?";
+		IntentHandler intentHandler = mock(IntentHandler.class);
+		given(handlerFactory.getIntentHandlerForIntent(intent)).willReturn(intentHandler);
+
+		SpeechletResponse expectedSpeechletResponse = mock(SpeechletResponse.class);
+		given(intentHandler.handleIntent(requestEnvelope)).willReturn(expectedSpeechletResponse);
 
 		// When
 		SpeechletResponse speechletResponse = speechlet.onIntent(requestEnvelope);
 
 		// Then
-		assertThat(speechletResponse)
-				.isAnAskResponse()
-				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
+		assertThat(speechletResponse).isEqualTo(expectedSpeechletResponse);
 	}
 
 	@Test

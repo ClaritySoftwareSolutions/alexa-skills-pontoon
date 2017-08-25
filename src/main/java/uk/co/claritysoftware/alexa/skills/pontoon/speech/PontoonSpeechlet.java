@@ -2,6 +2,8 @@ package uk.co.claritysoftware.alexa.skills.pontoon.speech;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import com.amazon.speech.json.SpeechletRequestEnvelope;
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.LaunchRequest;
@@ -14,16 +16,21 @@ import uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.PontoonIntent;
 import uk.co.claritysoftware.alexa.skills.speech.AbstractSpeechlet;
 
 /**
- * Dice implementation of {@link SpeechletV2}
+ * Pontoon implementation of {@link SpeechletV2}
  */
+@Component
 public class PontoonSpeechlet extends AbstractSpeechlet {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PontoonSpeechlet.class);
 
 	private final SessionSupport sessionSupport;
 
-	public PontoonSpeechlet(final SessionSupport sessionSupport) {
+	private final HandlerFactory handlerFactory;
+
+	@Autowired
+	public PontoonSpeechlet(final SessionSupport sessionSupport, final HandlerFactory handlerFactory) {
 		this.sessionSupport = sessionSupport;
+		this.handlerFactory = handlerFactory;
 	}
 
 	@Override
@@ -40,7 +47,7 @@ public class PontoonSpeechlet extends AbstractSpeechlet {
 		LOG.debug("onLaunch requestId={}, sessionId={}", requestEnvelope.getRequest().getRequestId(),
 				requestEnvelope.getSession().getSessionId());
 
-		return new LaunchHandler(PontoonGameActions.getInstance(), SessionSupport.getInstance())
+		return handlerFactory.getLaunchHandler()
 				.handle(requestEnvelope);
 	}
 
@@ -50,9 +57,10 @@ public class PontoonSpeechlet extends AbstractSpeechlet {
 				requestEnvelope.getSession().getSessionId());
 
 		final String intentName = getIntentName(requestEnvelope);
-		return PontoonIntent.from(intentName)
-				.orElseThrow(() -> new IllegalArgumentException("No intent with name " + intentName))
-				.getIntentHandler()
+		final PontoonIntent pontoonIntent = PontoonIntent.from(intentName)
+				.orElseThrow(() -> new IllegalArgumentException("No intent with name " + intentName));
+
+		return handlerFactory.getIntentHandlerForIntent(pontoonIntent)
 				.handleIntent(requestEnvelope);
 	}
 

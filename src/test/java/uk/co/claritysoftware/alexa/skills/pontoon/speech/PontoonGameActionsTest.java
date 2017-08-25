@@ -2,6 +2,7 @@ package uk.co.claritysoftware.alexa.skills.pontoon.speech;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -9,8 +10,13 @@ import static org.mockito.internal.util.reflection.Whitebox.setInternalState;
 import static uk.co.claritysoftware.alexa.skills.testsupport.assertj.RepromptAssert.assertThat;
 import static uk.co.claritysoftware.alexa.skills.testsupport.assertj.SpeechletResponseAssert.assertThat;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,10 +25,12 @@ import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.Card;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardDeck;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardSuit;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardValue;
+import uk.co.claritysoftware.alexa.skills.pontoon.session.SessionSupport;
 
 /**
  * Unit test class for {@link PontoonGameActions}
  */
+@RunWith(MockitoJUnitRunner.class)
 public class PontoonGameActionsTest {
 
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -43,21 +51,27 @@ public class PontoonGameActionsTest {
 
 	private static final Card ACE_OF_SPADES = new Card(CardValue.ACE, CardSuit.SPADES);
 
-	private PontoonGameActions pontoonGameActions = PontoonGameActions.getInstance();
+	@Mock
+	private SessionSupport sessionSupport;
+
+	@InjectMocks
+	private PontoonGameActions pontoonGameActions;
 
 	@Test
-	public void shouldDealInitialHandGivenHandWithNoAces() throws Exception {
+	public void shouldDealInitialHandGivenHandWithNoAces() {
 		// Given
 		Session session = session();
+		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(false);
 
-		String serializedCardDeck = cardDeckJson(FIVE_OF_CLUBS, QUEEN_OF_HEARTS);
-
-		given(session.getAttribute("cardDeck")).willReturn(serializedCardDeck);
-		given(session.getAttribute("aceIsHigh")).willReturn(false);
+		CardDeck cardDeck = cardDeck(FIVE_OF_CLUBS, QUEEN_OF_HEARTS);
+		given(sessionSupport.getCardDeckFromSession(session)).willReturn(cardDeck);
 
 		String expectedPlainTextOutputSpeech = "I have dealt you the Five of CLUBS, and the Queen of HEARTS. Your score is 15. What would you like to do?";
 		String expectedPlainTextReprompt = "What would you like to do?";
 
+		CardDeck expectedCardDeckOnSession = cardDeck();
+		Hand expectedHandOnSession = hand(FIVE_OF_CLUBS, QUEEN_OF_HEARTS);
+
 		// When
 		SpeechletResponse speechletResponse = pontoonGameActions.dealInitialHand(session);
 
@@ -66,23 +80,25 @@ public class PontoonGameActionsTest {
 				.isAnAskResponse()
 				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
 		assertThat(speechletResponse.getReprompt()).hasPlainTextOutputSpeech(expectedPlainTextReprompt);
-		verify(session).setAttribute("cardDeck", emptyCardDeckJson());
-		verify(session).setAttribute("hand", handJson(FIVE_OF_CLUBS, QUEEN_OF_HEARTS));
+		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
+		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
 
 	@Test
-	public void shouldDealInitialHandGivenHandWithAceAndAceIsLow() throws Exception {
+	public void shouldDealInitialHandGivenHandWithAceAndAceIsLow() {
 		// Given
 		Session session = session();
+		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(false);
 
-		String serializedCardDeck = cardDeckJson(ACE_OF_CLUBS, QUEEN_OF_HEARTS);
-
-		given(session.getAttribute("cardDeck")).willReturn(serializedCardDeck);
-		given(session.getAttribute("aceIsHigh")).willReturn(false);
+		CardDeck cardDeck = cardDeck(ACE_OF_CLUBS, QUEEN_OF_HEARTS);
+		given(sessionSupport.getCardDeckFromSession(session)).willReturn(cardDeck);
 
 		String expectedPlainTextOutputSpeech = "I have dealt you the Ace of CLUBS, and the Queen of HEARTS. Ace is low. Your score is 11. What would you like to do?";
 		String expectedPlainTextReprompt = "What would you like to do?";
 
+		CardDeck expectedCardDeckOnSession = cardDeck();
+		Hand expectedHandOnSession = hand(ACE_OF_CLUBS, QUEEN_OF_HEARTS);
+
 		// When
 		SpeechletResponse speechletResponse = pontoonGameActions.dealInitialHand(session);
 
@@ -91,22 +107,24 @@ public class PontoonGameActionsTest {
 				.isAnAskResponse()
 				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
 		assertThat(speechletResponse.getReprompt()).hasPlainTextOutputSpeech(expectedPlainTextReprompt);
-		verify(session).setAttribute("cardDeck", emptyCardDeckJson());
-		verify(session).setAttribute("hand", handJson(ACE_OF_CLUBS, QUEEN_OF_HEARTS));
+		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
+		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
 
 	@Test
-	public void shouldDealInitialHandGivenBustHandWithAceIsHigh() throws Exception {
+	public void shouldDealInitialHandGivenBustHandWithAceIsHigh() {
 		// Given
 		Session session = session();
+		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(true);
 
-		String serializedCardDeck = cardDeckJson(ACE_OF_CLUBS, ACE_OF_SPADES);
-
-		given(session.getAttribute("cardDeck")).willReturn(serializedCardDeck);
-		given(session.getAttribute("aceIsHigh")).willReturn(true);
+		CardDeck cardDeck = cardDeck(ACE_OF_CLUBS, ACE_OF_SPADES);
+		given(sessionSupport.getCardDeckFromSession(session)).willReturn(cardDeck);
 
 		String expectedPlainTextOutputSpeech = "Bad luck buster! I have dealt you the Ace of CLUBS, and the Ace of SPADES; and ace was high. Your score is 22, and you are bust!";
 
+		CardDeck expectedCardDeckOnSession = cardDeck();
+		Hand expectedHandOnSession = hand(ACE_OF_CLUBS, ACE_OF_SPADES);
+
 		// When
 		SpeechletResponse speechletResponse = pontoonGameActions.dealInitialHand(session);
 
@@ -114,22 +132,24 @@ public class PontoonGameActionsTest {
 		assertThat(speechletResponse)
 				.isATellResponse()
 				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
-		verify(session).setAttribute("cardDeck", emptyCardDeckJson());
-		verify(session).setAttribute("hand", handJson(ACE_OF_CLUBS, ACE_OF_SPADES));
+		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
+		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
 
 	@Test
-	public void shouldDealInitialHandGivenWinningHandWithAceIsHigh() throws Exception {
+	public void shouldDealInitialHandGivenWinningHandWithAceIsHigh() {
 		// Given
 		Session session = session();
+		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(true);
 
-		String serializedCardDeck = cardDeckJson(ACE_OF_CLUBS, QUEEN_OF_HEARTS);
-
-		given(session.getAttribute("cardDeck")).willReturn(serializedCardDeck);
-		given(session.getAttribute("aceIsHigh")).willReturn(true);
+		CardDeck cardDeck = cardDeck(ACE_OF_CLUBS, QUEEN_OF_HEARTS);
+		given(sessionSupport.getCardDeckFromSession(session)).willReturn(cardDeck);
 
 		String expectedPlainTextOutputSpeech = "Winner winner, chicken dinner! I have dealt you the Ace of CLUBS, and the Queen of HEARTS; and ace was high. Your score is 21. That's pontoon!";
 
+		CardDeck expectedCardDeckOnSession = cardDeck();
+		Hand expectedHandOnSession = hand(ACE_OF_CLUBS, QUEEN_OF_HEARTS);
+
 		// When
 		SpeechletResponse speechletResponse = pontoonGameActions.dealInitialHand(session);
 
@@ -137,25 +157,28 @@ public class PontoonGameActionsTest {
 		assertThat(speechletResponse)
 				.isATellResponse()
 				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
-		verify(session).setAttribute("cardDeck", emptyCardDeckJson());
-		verify(session).setAttribute("hand", handJson(ACE_OF_CLUBS, QUEEN_OF_HEARTS));
+		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
+		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
 
 	@Test
-	public void shouldTwistGivenHandWithNoAces() throws Exception {
+	public void shouldTwistGivenHandWithNoAces() {
 		// Given
 		Session session = session();
+		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(false);
 
-		String serializedCardDeck = cardDeckJson(TWO_OF_SPADES);
-		String serializedHand = handJson(FIVE_OF_CLUBS, QUEEN_OF_HEARTS);
+		CardDeck cardDeck = cardDeck(TWO_OF_SPADES);
+		given(sessionSupport.getCardDeckFromSession(session)).willReturn(cardDeck);
 
-		given(session.getAttribute("cardDeck")).willReturn(serializedCardDeck);
-		given(session.getAttribute("aceIsHigh")).willReturn(false);
-		given(session.getAttribute("hand")).willReturn(serializedHand);
+		Hand hand = hand(FIVE_OF_CLUBS, QUEEN_OF_HEARTS);
+		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
 		String expectedPlainTextOutputSpeech = "Your hand is now the Five of CLUBS, the Queen of HEARTS, and the Two of SPADES. Your score is 17. What would you like to do?";
 		String expectedPlainTextReprompt = "What would you like to do?";
 
+		CardDeck expectedCardDeckOnSession = cardDeck();
+		Hand expectedHandOnSession = hand(FIVE_OF_CLUBS, QUEEN_OF_HEARTS, TWO_OF_SPADES);
+
 		// When
 		SpeechletResponse speechletResponse = pontoonGameActions.twist(session);
 
@@ -164,25 +187,28 @@ public class PontoonGameActionsTest {
 				.isAnAskResponse()
 				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
 		assertThat(speechletResponse.getReprompt()).hasPlainTextOutputSpeech(expectedPlainTextReprompt);
-		verify(session).setAttribute("hand", handJson(FIVE_OF_CLUBS, QUEEN_OF_HEARTS, TWO_OF_SPADES));
-		verify(session).setAttribute("cardDeck", emptyCardDeckJson());
+		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
+		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
 
 	@Test
-	public void shouldTwistGivenHandWithAcesAndAceIsLow() throws Exception {
+	public void shouldTwistGivenHandWithAcesAndAceIsLow() {
 		// Given
 		Session session = session();
+		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(false);
 
-		String serializedCardDeck = cardDeckJson(ACE_OF_CLUBS);
-		String serializedHand = handJson(FIVE_OF_CLUBS, QUEEN_OF_HEARTS);
+		CardDeck cardDeck = cardDeck(ACE_OF_CLUBS);
+		given(sessionSupport.getCardDeckFromSession(session)).willReturn(cardDeck);
 
-		given(session.getAttribute("cardDeck")).willReturn(serializedCardDeck);
-		given(session.getAttribute("aceIsHigh")).willReturn(false);
-		given(session.getAttribute("hand")).willReturn(serializedHand);
+		Hand hand = hand(FIVE_OF_CLUBS, QUEEN_OF_HEARTS);
+		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
 		String expectedPlainTextOutputSpeech = "Your hand is now the Five of CLUBS, the Queen of HEARTS, and the Ace of CLUBS. Ace is low. Your score is 16. What would you like to do?";
 		String expectedPlainTextReprompt = "What would you like to do?";
 
+		CardDeck expectedCardDeckOnSession = cardDeck();
+		Hand expectedHandOnSession = hand(FIVE_OF_CLUBS, QUEEN_OF_HEARTS, ACE_OF_CLUBS);
+
 		// When
 		SpeechletResponse speechletResponse = pontoonGameActions.twist(session);
 
@@ -191,25 +217,28 @@ public class PontoonGameActionsTest {
 				.isAnAskResponse()
 				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
 		assertThat(speechletResponse.getReprompt()).hasPlainTextOutputSpeech(expectedPlainTextReprompt);
-		verify(session).setAttribute("hand", handJson(FIVE_OF_CLUBS, QUEEN_OF_HEARTS, ACE_OF_CLUBS));
-		verify(session).setAttribute("cardDeck", emptyCardDeckJson());
+		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
+		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
 
 	@Test
-	public void shouldTwistGivenHandWithAcesAndAceIsHigh() throws Exception {
+	public void shouldTwistGivenHandWithAcesAndAceIsHigh() {
 		// Given
 		Session session = session();
+		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(true);
 
-		String serializedCardDeck = cardDeckJson(ACE_OF_CLUBS);
-		String serializedHand = handJson(FIVE_OF_CLUBS, TWO_OF_SPADES);
+		CardDeck cardDeck = cardDeck(ACE_OF_CLUBS);
+		given(sessionSupport.getCardDeckFromSession(session)).willReturn(cardDeck);
 
-		given(session.getAttribute("cardDeck")).willReturn(serializedCardDeck);
-		given(session.getAttribute("aceIsHigh")).willReturn(true);
-		given(session.getAttribute("hand")).willReturn(serializedHand);
+		Hand hand = hand(FIVE_OF_CLUBS, TWO_OF_SPADES);
+		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
 		String expectedPlainTextOutputSpeech = "Your hand is now the Five of CLUBS, the Two of SPADES, and the Ace of CLUBS. Ace is high. Your score is 18. What would you like to do?";
 		String expectedPlainTextReprompt = "What would you like to do?";
 
+		CardDeck expectedCardDeckOnSession = cardDeck();
+		Hand expectedHandOnSession = hand(FIVE_OF_CLUBS, TWO_OF_SPADES, ACE_OF_CLUBS);
+
 		// When
 		SpeechletResponse speechletResponse = pontoonGameActions.twist(session);
 
@@ -218,24 +247,27 @@ public class PontoonGameActionsTest {
 				.isAnAskResponse()
 				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
 		assertThat(speechletResponse.getReprompt()).hasPlainTextOutputSpeech(expectedPlainTextReprompt);
-		verify(session).setAttribute("hand", handJson(FIVE_OF_CLUBS, TWO_OF_SPADES, ACE_OF_CLUBS));
-		verify(session).setAttribute("cardDeck", emptyCardDeckJson());
+		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
+		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
 
 	@Test
-	public void shouldTwistGivenCardToMakeWinningHandWithAcesAndAceIsLow() throws Exception {
+	public void shouldTwistGivenCardToMakeWinningHandWithAcesAndAceIsLow() {
 		// Given
 		Session session = session();
+		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(false);
 
-		String serializedCardDeck = cardDeckJson(ACE_OF_CLUBS);
-		String serializedHand = handJson(TEN_OF_HEARTS, QUEEN_OF_HEARTS);
+		CardDeck cardDeck = cardDeck(ACE_OF_CLUBS);
+		given(sessionSupport.getCardDeckFromSession(session)).willReturn(cardDeck);
 
-		given(session.getAttribute("cardDeck")).willReturn(serializedCardDeck);
-		given(session.getAttribute("aceIsHigh")).willReturn(false);
-		given(session.getAttribute("hand")).willReturn(serializedHand);
+		Hand hand = hand(TEN_OF_HEARTS, QUEEN_OF_HEARTS);
+		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
 		String expectedPlainTextOutputSpeech = "Congratulations, you have a winning hand! Your cards are the Ten of HEARTS, the Queen of HEARTS, and the Ace of CLUBS. Ace is low. Nice one!";
 
+		CardDeck expectedCardDeckOnSession = cardDeck();
+		Hand expectedHandOnSession = hand(TEN_OF_HEARTS, QUEEN_OF_HEARTS, ACE_OF_CLUBS);
+
 		// When
 		SpeechletResponse speechletResponse = pontoonGameActions.twist(session);
 
@@ -243,24 +275,27 @@ public class PontoonGameActionsTest {
 		assertThat(speechletResponse)
 				.isATellResponse()
 				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
-		verify(session).setAttribute("hand", handJson(TEN_OF_HEARTS, QUEEN_OF_HEARTS, ACE_OF_CLUBS));
-		verify(session).setAttribute("cardDeck", emptyCardDeckJson());
+		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
+		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
 
 	@Test
-	public void shouldTwistGivenCardToMakeWinningHandWithAcesAndAceIsHigh() throws Exception {
+	public void shouldTwistGivenCardToMakeWinningHandWithAcesAndAceIsHigh() {
 		// Given
 		Session session = session();
+		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(true);
 
-		String serializedCardDeck = cardDeckJson(ACE_OF_CLUBS);
-		String serializedHand = handJson(FIVE_OF_CLUBS, TWO_OF_SPADES, THREE_OF_SPADES);
+		CardDeck cardDeck = cardDeck(ACE_OF_CLUBS);
+		given(sessionSupport.getCardDeckFromSession(session)).willReturn(cardDeck);
 
-		given(session.getAttribute("cardDeck")).willReturn(serializedCardDeck);
-		given(session.getAttribute("aceIsHigh")).willReturn(true);
-		given(session.getAttribute("hand")).willReturn(serializedHand);
+		Hand hand = hand(FIVE_OF_CLUBS, TWO_OF_SPADES, THREE_OF_SPADES);
+		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
 		String expectedPlainTextOutputSpeech = "Congratulations, you have a winning hand! Your cards are the Five of CLUBS, the Two of SPADES, the Three of SPADES, and the Ace of CLUBS. Ace is high. Nice one!";
 
+		CardDeck expectedCardDeckOnSession = cardDeck();
+		Hand expectedHandOnSession = hand(FIVE_OF_CLUBS, TWO_OF_SPADES, THREE_OF_SPADES, ACE_OF_CLUBS);
+
 		// When
 		SpeechletResponse speechletResponse = pontoonGameActions.twist(session);
 
@@ -268,24 +303,27 @@ public class PontoonGameActionsTest {
 		assertThat(speechletResponse)
 				.isATellResponse()
 				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
-		verify(session).setAttribute("hand", handJson(FIVE_OF_CLUBS, TWO_OF_SPADES, THREE_OF_SPADES, ACE_OF_CLUBS));
-		verify(session).setAttribute("cardDeck", emptyCardDeckJson());
+		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
+		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
 
 	@Test
-	public void shouldTwistGivenCardToMakeWinningHand() throws Exception {
+	public void shouldTwistGivenCardToMakeWinningHand() {
 		// Given
 		Session session = session();
+		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(true);
 
-		String serializedCardDeck = cardDeckJson(QUEEN_OF_HEARTS);
-		String serializedHand = handJson(FIVE_OF_CLUBS, SIX_OF_CLUBS);
+		CardDeck cardDeck = cardDeck(QUEEN_OF_HEARTS);
+		given(sessionSupport.getCardDeckFromSession(session)).willReturn(cardDeck);
 
-		given(session.getAttribute("cardDeck")).willReturn(serializedCardDeck);
-		given(session.getAttribute("aceIsHigh")).willReturn(true);
-		given(session.getAttribute("hand")).willReturn(serializedHand);
+		Hand hand = hand(FIVE_OF_CLUBS, SIX_OF_CLUBS);
+		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
 		String expectedPlainTextOutputSpeech = "Congratulations, you have a winning hand! Your cards are the Five of CLUBS, the Six of CLUBS, and the Queen of HEARTS. Nice one!";
 
+		CardDeck expectedCardDeckOnSession = cardDeck();
+		Hand expectedHandOnSession = hand(FIVE_OF_CLUBS, SIX_OF_CLUBS, QUEEN_OF_HEARTS);
+
 		// When
 		SpeechletResponse speechletResponse = pontoonGameActions.twist(session);
 
@@ -293,24 +331,27 @@ public class PontoonGameActionsTest {
 		assertThat(speechletResponse)
 				.isATellResponse()
 				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
-		verify(session).setAttribute("hand", handJson(FIVE_OF_CLUBS, SIX_OF_CLUBS, QUEEN_OF_HEARTS));
-		verify(session).setAttribute("cardDeck", emptyCardDeckJson());
+		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
+		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
 
 	@Test
-	public void shouldTwistGivenCardToMakeHandBustWithAcesAndAceIsLow() throws Exception {
+	public void shouldTwistGivenCardToMakeHandBustWithAcesAndAceIsLow() {
 		// Given
 		Session session = session();
+		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(false);
 
-		String serializedCardDeck = cardDeckJson(ACE_OF_CLUBS);
-		String serializedHand = handJson(TEN_OF_HEARTS, FIVE_OF_CLUBS, SIX_OF_CLUBS);
+		CardDeck cardDeck = cardDeck(ACE_OF_CLUBS);
+		given(sessionSupport.getCardDeckFromSession(session)).willReturn(cardDeck);
 
-		given(session.getAttribute("cardDeck")).willReturn(serializedCardDeck);
-		given(session.getAttribute("aceIsHigh")).willReturn(false);
-		given(session.getAttribute("hand")).willReturn(serializedHand);
+		Hand hand = hand(TEN_OF_HEARTS, FIVE_OF_CLUBS, SIX_OF_CLUBS);
+		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
 		String expectedPlainTextOutputSpeech = "Bad times! You've bust! Your hand is the Ten of HEARTS, the Five of CLUBS, the Six of CLUBS, and the Ace of CLUBS. Ace is low. Your score is 22. That was one twist too far. Better luck next time!!";
 
+		CardDeck expectedCardDeckOnSession = cardDeck();
+		Hand expectedHandOnSession = hand(TEN_OF_HEARTS, FIVE_OF_CLUBS, SIX_OF_CLUBS, ACE_OF_CLUBS);
+
 		// When
 		SpeechletResponse speechletResponse = pontoonGameActions.twist(session);
 
@@ -318,24 +359,27 @@ public class PontoonGameActionsTest {
 		assertThat(speechletResponse)
 				.isATellResponse()
 				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
-		verify(session).setAttribute("hand", handJson(TEN_OF_HEARTS, FIVE_OF_CLUBS, SIX_OF_CLUBS, ACE_OF_CLUBS));
-		verify(session).setAttribute("cardDeck", emptyCardDeckJson());
+		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
+		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
 
 	@Test
-	public void shouldTwistGivenCardToMakeHandBustWithAcesAndAceIsHigh() throws Exception {
+	public void shouldTwistGivenCardToMakeHandBustWithAcesAndAceIsHigh() {
 		// Given
 		Session session = session();
+		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(true);
 
-		String serializedCardDeck = cardDeckJson(ACE_OF_CLUBS);
-		String serializedHand = handJson(FIVE_OF_CLUBS, TEN_OF_HEARTS);
+		CardDeck cardDeck = cardDeck(ACE_OF_CLUBS);
+		given(sessionSupport.getCardDeckFromSession(session)).willReturn(cardDeck);
 
-		given(session.getAttribute("cardDeck")).willReturn(serializedCardDeck);
-		given(session.getAttribute("aceIsHigh")).willReturn(true);
-		given(session.getAttribute("hand")).willReturn(serializedHand);
+		Hand hand = hand(FIVE_OF_CLUBS, TEN_OF_HEARTS);
+		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
 		String expectedPlainTextOutputSpeech = "Bad times! You've bust! Your hand is the Five of CLUBS, the Ten of HEARTS, and the Ace of CLUBS. Ace is high. Your score is 26. That was one twist too far. Better luck next time!!";
 
+		CardDeck expectedCardDeckOnSession = cardDeck();
+		Hand expectedHandOnSession = hand(FIVE_OF_CLUBS, TEN_OF_HEARTS, ACE_OF_CLUBS);
+
 		// When
 		SpeechletResponse speechletResponse = pontoonGameActions.twist(session);
 
@@ -343,24 +387,27 @@ public class PontoonGameActionsTest {
 		assertThat(speechletResponse)
 				.isATellResponse()
 				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
-		verify(session).setAttribute("hand", handJson(FIVE_OF_CLUBS, TEN_OF_HEARTS, ACE_OF_CLUBS));
-		verify(session).setAttribute("cardDeck", emptyCardDeckJson());
+		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
+		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
 
 	@Test
-	public void shouldTwistGivenCardToMakeHandBust() throws Exception {
+	public void shouldTwistGivenCardToMakeHandBust() {
 		// Given
 		Session session = session();
+		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(false);
 
-		String serializedCardDeck = cardDeckJson(QUEEN_OF_HEARTS);
-		String serializedHand = handJson(FIVE_OF_CLUBS, TEN_OF_HEARTS);
+		CardDeck cardDeck = cardDeck(QUEEN_OF_HEARTS);
+		given(sessionSupport.getCardDeckFromSession(session)).willReturn(cardDeck);
 
-		given(session.getAttribute("cardDeck")).willReturn(serializedCardDeck);
-		given(session.getAttribute("aceIsHigh")).willReturn(true);
-		given(session.getAttribute("hand")).willReturn(serializedHand);
+		Hand hand = hand(FIVE_OF_CLUBS, TEN_OF_HEARTS);
+		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
 		String expectedPlainTextOutputSpeech = "Bad times! You've bust! Your hand is the Five of CLUBS, the Ten of HEARTS, and the Queen of HEARTS. Your score is 25. That was one twist too far. Better luck next time!!";
 
+		CardDeck expectedCardDeckOnSession = cardDeck();
+		Hand expectedHandOnSession = hand(FIVE_OF_CLUBS, TEN_OF_HEARTS, QUEEN_OF_HEARTS);
+
 		// When
 		SpeechletResponse speechletResponse = pontoonGameActions.twist(session);
 
@@ -368,19 +415,18 @@ public class PontoonGameActionsTest {
 		assertThat(speechletResponse)
 				.isATellResponse()
 				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
-		verify(session).setAttribute("hand", handJson(FIVE_OF_CLUBS, TEN_OF_HEARTS, QUEEN_OF_HEARTS));
-		verify(session).setAttribute("cardDeck", emptyCardDeckJson());
+		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
+		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
 
 	@Test
-	public void shouldStickGivenHandWithAcesAndAceIsLow() throws Exception {
+	public void shouldStickGivenHandWithAcesAndAceIsLow() {
 		// Given
 		Session session = session();
+		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(false);
 
-		String serializedHand = handJson(FIVE_OF_CLUBS, ACE_OF_CLUBS);
-
-		given(session.getAttribute("aceIsHigh")).willReturn(false);
-		given(session.getAttribute("hand")).willReturn(serializedHand);
+		Hand hand = hand(FIVE_OF_CLUBS, ACE_OF_CLUBS);
+		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
 		String expectedPlainTextOutputSpeech = "Your final score is 6 with a hand of the Five of CLUBS, and the Ace of CLUBS. Ace is low.";
 
@@ -391,18 +437,19 @@ public class PontoonGameActionsTest {
 		assertThat(speechletResponse)
 				.isATellResponse()
 				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
-		verify(session, never()).setAttribute(any(), any());
+		verify(sessionSupport, never()).setAceIsHighOnSession(any(), anyBoolean());
+		verify(sessionSupport, never()).setHandOnSession(any(), any());
+		verify(sessionSupport, never()).setCardDeckOnSession(any(), any());
 	}
 
 	@Test
-	public void shouldStickGivenHandWithAcesAndAceIsHigh() throws Exception {
+	public void shouldStickGivenHandWithAcesAndAceIsHigh() {
 		// Given
 		Session session = session();
+		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(true);
 
-		String serializedHand = handJson(FIVE_OF_CLUBS, ACE_OF_CLUBS);
-
-		given(session.getAttribute("aceIsHigh")).willReturn(true);
-		given(session.getAttribute("hand")).willReturn(serializedHand);
+		Hand hand = hand(FIVE_OF_CLUBS, ACE_OF_CLUBS);
+		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
 		String expectedPlainTextOutputSpeech = "Your final score is 16 with a hand of the Five of CLUBS, and the Ace of CLUBS. Ace is high.";
 
@@ -413,18 +460,19 @@ public class PontoonGameActionsTest {
 		assertThat(speechletResponse)
 				.isATellResponse()
 				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
-		verify(session, never()).setAttribute(any(), any());
+		verify(sessionSupport, never()).setAceIsHighOnSession(any(), anyBoolean());
+		verify(sessionSupport, never()).setHandOnSession(any(), any());
+		verify(sessionSupport, never()).setCardDeckOnSession(any(), any());
 	}
 
 	@Test
-	public void shouldStick() throws Exception {
+	public void shouldStick() {
 		// Given
 		Session session = session();
+		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(false);
 
-		String serializedHand = handJson(FIVE_OF_CLUBS, TEN_OF_HEARTS);
-
-		given(session.getAttribute("aceIsHigh")).willReturn(true);
-		given(session.getAttribute("hand")).willReturn(serializedHand);
+		Hand hand = hand(FIVE_OF_CLUBS, TEN_OF_HEARTS);
+		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
 		String expectedPlainTextOutputSpeech = "Your final score is 15 with a hand of the Five of CLUBS, and the Ten of HEARTS.";
 
@@ -435,7 +483,9 @@ public class PontoonGameActionsTest {
 		assertThat(speechletResponse)
 				.isATellResponse()
 				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
-		verify(session, never()).setAttribute(any(), any());
+		verify(sessionSupport, never()).setAceIsHighOnSession(any(), anyBoolean());
+		verify(sessionSupport, never()).setHandOnSession(any(), any());
+		verify(sessionSupport, never()).setCardDeckOnSession(any(), any());
 	}
 
 	private Session session() {
@@ -444,27 +494,13 @@ public class PontoonGameActionsTest {
 		return session;
 	}
 
-	private String emptyCardDeckJson() throws Exception {
-		return cardDeckJson();
-	}
-
-	private String cardDeckJson(final Card... cards) throws Exception {
-		CardDeck cardDeck = cardDeck(cards);
-		return OBJECT_MAPPER.writeValueAsString(cardDeck);
-	}
-
 	private CardDeck cardDeck(final Card... cards) {
 		CardDeck cardDeck = new CardDeck();
-		setInternalState(cardDeck, "cards", Arrays.asList(cards));
+		setInternalState(cardDeck, "cards", new ArrayList(Arrays.asList(cards)));
 		return cardDeck;
 	}
 
 	private Hand hand(final Card... cards) {
-		return new Hand(Arrays.asList(cards));
-	}
-
-	private String handJson(final Card... cards) throws Exception {
-		Hand hand = hand(cards);
-		return OBJECT_MAPPER.writeValueAsString(hand);
+		return new Hand(new ArrayList(Arrays.asList(cards)));
 	}
 }
