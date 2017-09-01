@@ -3,6 +3,8 @@ package uk.co.claritysoftware.alexa.skills.pontoon.speech;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -10,16 +12,18 @@ import static org.mockito.internal.util.reflection.Whitebox.setInternalState;
 import static uk.co.claritysoftware.alexa.skills.testsupport.assertj.RepromptAssert.assertThat;
 import static uk.co.claritysoftware.alexa.skills.testsupport.assertj.SpeechletResponseAssert.assertThat;
 
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.Hand;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.Card;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardDeck;
@@ -27,13 +31,14 @@ import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardSuit;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardValue;
 import uk.co.claritysoftware.alexa.skills.pontoon.session.SessionSupport;
 
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+
 /**
  * Unit test class for {@link PontoonGameActions}
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PontoonGameActionsTest {
-
-	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	private static final Card FIVE_OF_CLUBS = new Card(CardValue.FIVE, CardSuit.CLUBS);
 
@@ -54,6 +59,9 @@ public class PontoonGameActionsTest {
 	@Mock
 	private SessionSupport sessionSupport;
 
+	@Mock
+	private Configuration configuration;
+
 	@InjectMocks
 	private PontoonGameActions pontoonGameActions;
 
@@ -66,7 +74,7 @@ public class PontoonGameActionsTest {
 		CardDeck cardDeck = cardDeck(FIVE_OF_CLUBS, QUEEN_OF_HEARTS);
 		given(sessionSupport.getCardDeckFromSession(session)).willReturn(cardDeck);
 
-		String expectedPlainTextOutputSpeech = "I have dealt you the Five of CLUBS, and the Queen of HEARTS. Your score is 15. What would you like to do?";
+		String expectedPlainTextOutputSpeech = "I have dealt you the Five of CLUBS, and the Queen of HEARTS. Your score is 15. You can twist or stick. What would you like to do?";
 		String expectedPlainTextReprompt = "What would you like to do?";
 
 		CardDeck expectedCardDeckOnSession = cardDeck();
@@ -93,7 +101,7 @@ public class PontoonGameActionsTest {
 		CardDeck cardDeck = cardDeck(ACE_OF_CLUBS, QUEEN_OF_HEARTS);
 		given(sessionSupport.getCardDeckFromSession(session)).willReturn(cardDeck);
 
-		String expectedPlainTextOutputSpeech = "I have dealt you the Ace of CLUBS, and the Queen of HEARTS. Ace is low. Your score is 11. What would you like to do?";
+		String expectedPlainTextOutputSpeech = "I have dealt you the Ace of CLUBS, and the Queen of HEARTS. Ace is low. Your score is 11. You can twist or stick. What would you like to do?";
 		String expectedPlainTextReprompt = "What would you like to do?";
 
 		CardDeck expectedCardDeckOnSession = cardDeck();
@@ -173,7 +181,7 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(FIVE_OF_CLUBS, QUEEN_OF_HEARTS);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		String expectedPlainTextOutputSpeech = "Your hand is now the Five of CLUBS, the Queen of HEARTS, and the Two of SPADES. Your score is 17. What would you like to do?";
+		String expectedPlainTextOutputSpeech = "Your hand is now the Five of CLUBS, the Queen of HEARTS, and the Two of SPADES. Your score is 17. You can twist or stick. What would you like to do?";
 		String expectedPlainTextReprompt = "What would you like to do?";
 
 		CardDeck expectedCardDeckOnSession = cardDeck();
@@ -203,7 +211,7 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(FIVE_OF_CLUBS, QUEEN_OF_HEARTS);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		String expectedPlainTextOutputSpeech = "Your hand is now the Five of CLUBS, the Queen of HEARTS, and the Ace of CLUBS. Ace is low. Your score is 16. What would you like to do?";
+		String expectedPlainTextOutputSpeech = "Your hand is now the Five of CLUBS, the Queen of HEARTS, and the Ace of CLUBS. Ace is low. Your score is 16. You can twist or stick. What would you like to do?";
 		String expectedPlainTextReprompt = "What would you like to do?";
 
 		CardDeck expectedCardDeckOnSession = cardDeck();
@@ -233,7 +241,7 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(FIVE_OF_CLUBS, TWO_OF_SPADES);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		String expectedPlainTextOutputSpeech = "Your hand is now the Five of CLUBS, the Two of SPADES, and the Ace of CLUBS. Ace is high. Your score is 18. What would you like to do?";
+		String expectedPlainTextOutputSpeech = "Your hand is now the Five of CLUBS, the Two of SPADES, and the Ace of CLUBS. Ace is high. Your score is 18. You can twist or stick. What would you like to do?";
 		String expectedPlainTextReprompt = "What would you like to do?";
 
 		CardDeck expectedCardDeckOnSession = cardDeck();
@@ -488,6 +496,31 @@ public class PontoonGameActionsTest {
 		verify(sessionSupport, never()).setCardDeckOnSession(any(), any());
 	}
 
+	@Test
+	public void shouldHelp() throws Exception {
+		// Given
+		Session session = session();
+		Template template = mock(Template.class);
+		given(configuration.getTemplate("help.ftl")).willReturn(template);
+
+		doAnswer((InvocationOnMock invocationOnMock) -> {
+			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			writer.append("The help content");
+			return null;
+		}).when(template).process(eq(Collections.EMPTY_MAP), any(Writer.class));
+
+		String expectedPlainTextOutputSpeech = "The help content";
+		String expectedPlainTextReprompt = "What would you like to do?";
+
+		// When
+		SpeechletResponse speechletResponse = pontoonGameActions.help(session);
+
+		// Then
+		assertThat(speechletResponse)
+				.isAnAskResponse()
+				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
+		assertThat(speechletResponse.getReprompt()).hasPlainTextOutputSpeech(expectedPlainTextReprompt);
+	}
 	private Session session() {
 		Session session = mock(Session.class);
 		given(session.getSessionId()).willReturn("1234");

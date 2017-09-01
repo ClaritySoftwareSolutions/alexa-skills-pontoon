@@ -5,9 +5,14 @@ import static com.amazon.speech.speechlet.SpeechletResponse.newTellResponse;
 import static uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardValue.ACE;
 import static uk.co.claritysoftware.alexa.skills.speech.factory.RepromptFactory.reprompt;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +26,10 @@ import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.Card;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardDeck;
 import uk.co.claritysoftware.alexa.skills.pontoon.session.SessionSupport;
 
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+
 /**
  * Class to perform the actions of a game of pontoon
  */
@@ -31,9 +40,12 @@ public class PontoonGameActions {
 
 	private final SessionSupport sessionSupport;
 
+	private final Configuration configuration;
+
 	@Autowired
-	public PontoonGameActions(final SessionSupport sessionSupport) {
+	public PontoonGameActions(final SessionSupport sessionSupport, final Configuration configuration) {
 		this.sessionSupport = sessionSupport;
+		this.configuration = configuration;
 	}
 
 	/**
@@ -85,6 +97,18 @@ public class PontoonGameActions {
 		return stickSpeechletResponse(hand, aceIsHigh);
 	}
 
+	/**
+	 * Performs the help action
+	 *
+	 * @param session the {@link Session} containing the {@link CardDeck}.
+	 * @return a {@link SpeechletResponse} containing the help
+	 */
+	public SpeechletResponse help(final Session session) {
+		LOG.debug("help for session id {}", session.getSessionId());
+
+		return helpSpeechletResponse();
+	}
+
 	private SpeechletResponse dealInitialHand(final Session session, final boolean aceIsHigh) {
 		LOG.debug("dealInitialHand for session id {}, with aceIsHigh {}", session.getSessionId(), aceIsHigh);
 
@@ -124,7 +148,7 @@ public class PontoonGameActions {
 	}
 
 	private SpeechletResponse initialHandStillInPlayResponse(final Card card1, final Card card2, final int score, final boolean aceIsHigh) {
-		final String speechText = "I have dealt you the %s of %s, and the %s of %s. %sYour score is %d. What would you like to do?";
+		final String speechText = "I have dealt you the %s of %s, and the %s of %s. %sYour score is %d. You can twist or stick. What would you like to do?";
 
 		final PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
 		speech.setText(String.format(speechText,
@@ -179,7 +203,7 @@ public class PontoonGameActions {
 
 		speechText.append(handContainsAnAce(cards) ? String.format("Ace is %s. ", aceIsHigh ? "high" : "low") : "")
 				.append("Your score is ").append(score)
-				.append(". What would you like to do?");
+				.append(". You can twist or stick. What would you like to do?");
 
 		final PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
 		speech.setText(speechText.toString());
@@ -198,7 +222,7 @@ public class PontoonGameActions {
 		final PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
 		speech.setText(speechText.toString());
 
-		LOG.debug("dealInitialHand response {}", speech.getText());
+		LOG.debug("twist response {}", speech.getText());
 		return newTellResponse(speech);
 	}
 
@@ -213,7 +237,7 @@ public class PontoonGameActions {
 		final PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
 		speech.setText(speechText.toString());
 
-		LOG.debug("dealInitialHand response {}", speech.getText());
+		LOG.debug("twist response {}", speech.getText());
 		return newTellResponse(speech);
 	}
 
@@ -230,8 +254,32 @@ public class PontoonGameActions {
 		final PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
 		speech.setText(speechText.toString().trim());
 
-		LOG.debug("dealInitialHand response {}", speech.getText());
+		LOG.debug("stick response {}", speech.getText());
 		return newTellResponse(speech);
+	}
+
+	private SpeechletResponse helpSpeechletResponse() {
+		final PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+		speech.setText(helpContent());
+
+//		speech.setText(speechText.toString().trim());
+
+		LOG.debug("help response {}", speech.getText());
+		return newAskResponse(speech, reprompt("What would you like to do?"));
+	}
+
+	private String helpContent() {
+		Map parameters = Collections.EMPTY_MAP;
+		Writer writer = new StringWriter();
+		try {
+			Template template = configuration.getTemplate("help.ftl");
+			template.process(parameters, writer);
+		}
+		catch (IOException | TemplateException e) {
+			LOG.error("Error processing help template", e);
+		}
+		return writer.toString();
+
 	}
 
 	private String cardListSentence(final List<Card> cards) {

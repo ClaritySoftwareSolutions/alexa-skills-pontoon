@@ -3,5 +3,6 @@ StartGameIntent with aces {aceValue}
 StartGameIntent where ace is {aceValue}
 TwistIntent twist
 StickIntent stick
-
+AMAZON.HelpIntent help
+AMAZON.HelpIntent how do I play this game?
 
