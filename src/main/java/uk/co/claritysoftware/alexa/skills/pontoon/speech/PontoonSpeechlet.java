@@ -11,6 +11,9 @@ import com.amazon.speech.speechlet.SessionStartedRequest;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.speechlet.SpeechletV2;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardDeck;
+import uk.co.claritysoftware.alexa.skills.pontoon.exception.GameAlreadyStartedException;
+import uk.co.claritysoftware.alexa.skills.pontoon.exception.GameNotStartedException;
+import uk.co.claritysoftware.alexa.skills.pontoon.exception.InvalidGameStateException;
 import uk.co.claritysoftware.alexa.skills.pontoon.session.SessionSupport;
 import uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.PontoonIntent;
 import uk.co.claritysoftware.alexa.skills.speech.AbstractSpeechlet;
@@ -60,8 +63,17 @@ public class PontoonSpeechlet extends AbstractSpeechlet {
 		final PontoonIntent pontoonIntent = PontoonIntent.from(intentName)
 				.orElseThrow(() -> new IllegalArgumentException("No intent with name " + intentName));
 
-		return handlerFactory.getIntentHandlerForIntent(pontoonIntent)
-				.handleIntent(requestEnvelope);
+		try {
+			return handlerFactory.getIntentHandlerForIntent(pontoonIntent)
+					.handleIntent(requestEnvelope);
+		} catch (InvalidGameStateException e) {
+			LOG.warn("Cannot perform action {} as game {}", pontoonIntent,
+					e.getClass() == GameNotStartedException.class ? "not started yet" :
+							e.getClass() == GameAlreadyStartedException.class ? "already started" :
+									"");
+			return handlerFactory.getIntentHandlerForIntent(PontoonIntent.HELP_INTENT)
+					.handleIntent(requestEnvelope);
+		}
 	}
 
 	private String getIntentName(final SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {

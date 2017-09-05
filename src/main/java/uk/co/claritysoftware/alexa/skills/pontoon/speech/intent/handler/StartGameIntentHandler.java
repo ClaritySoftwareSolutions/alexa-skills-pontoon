@@ -9,6 +9,7 @@ import com.amazon.speech.slu.Slot;
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletResponse;
+import uk.co.claritysoftware.alexa.skills.pontoon.exception.GameAlreadyStartedException;
 import uk.co.claritysoftware.alexa.skills.pontoon.session.SessionSupport;
 import uk.co.claritysoftware.alexa.skills.pontoon.speech.PontoonGameActions;
 import uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.PontoonIntent;
@@ -48,6 +49,11 @@ public class StartGameIntentHandler implements IntentHandler {
 				requestEnvelope.getSession().getSessionId());
 
 		Session session = requestEnvelope.getSession();
+
+		if (isGameAlreadyStarted(session)) {
+			throw new GameAlreadyStartedException();
+		}
+
 		boolean aceIsHigh = "high".equals(getSlotValueFromRequest(requestEnvelope.getRequest(), ACE_VALUE_SLOTNAME));
 		sessionSupport.setAceIsHighOnSession(session, aceIsHigh);
 
@@ -57,6 +63,10 @@ public class StartGameIntentHandler implements IntentHandler {
 	private String getSlotValueFromRequest(IntentRequest request, String slotName) {
 		Slot slot = request.getIntent().getSlot(slotName);
 		return slot != null ? slot.getValue() : null;
+	}
+
+	private boolean isGameAlreadyStarted(final Session session) {
+		return pontoonGameActions.isGameAlreadyStarted(session);
 	}
 
 }

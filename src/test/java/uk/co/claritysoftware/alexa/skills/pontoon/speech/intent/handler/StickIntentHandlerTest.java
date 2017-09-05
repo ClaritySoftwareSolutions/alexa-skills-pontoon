@@ -28,13 +28,13 @@ public class StickIntentHandlerTest {
 	private StickIntentHandler intentHandler;
 
 	@Test
-	public void shouldHandleIntent() {
+	public void shouldDoIntent() {
 		// Given
 		SpeechletRequestEnvelope<IntentRequest> requestEnvelope = speechletRequestEnvelopeWithIntentName("TwistIntent");
 		Session session = requestEnvelope.getSession();
 
 		// When
-		intentHandler.handleIntent(requestEnvelope);
+		intentHandler.doIntent(requestEnvelope);
 
 		// Then
 		verify(pontoonGameActions).stick(session);

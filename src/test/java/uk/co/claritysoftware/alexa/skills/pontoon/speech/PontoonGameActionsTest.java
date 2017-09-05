@@ -1,5 +1,6 @@
 package uk.co.claritysoftware.alexa.skills.pontoon.speech;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
@@ -15,7 +16,8 @@ import static uk.co.claritysoftware.alexa.skills.testsupport.assertj.SpeechletRe
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -66,7 +68,7 @@ public class PontoonGameActionsTest {
 	private PontoonGameActions pontoonGameActions;
 
 	@Test
-	public void shouldDealInitialHandGivenHandWithNoAces() {
+	public void shouldDealInitialHandGivenHandWithNoAces() throws Exception {
 		// Given
 		Session session = session();
 		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(false);
@@ -74,7 +76,23 @@ public class PontoonGameActionsTest {
 		CardDeck cardDeck = cardDeck(FIVE_OF_CLUBS, QUEEN_OF_HEARTS);
 		given(sessionSupport.getCardDeckFromSession(session)).willReturn(cardDeck);
 
-		String expectedPlainTextOutputSpeech = "I have dealt you the Five of CLUBS, and the Queen of HEARTS. Your score is 15. You can twist or stick. What would you like to do?";
+		Map expectedParameters = new HashMap();
+		expectedParameters.put("gameAlreadyStarted", true);
+		expectedParameters.put("score", 15);
+		expectedParameters.put("handContainsAnAce", false);
+		expectedParameters.put("hand", "the Five of CLUBS, and the Queen of HEARTS");
+		expectedParameters.put("aceIsHigh", false);
+
+		Template template = mock(Template.class);
+		given(configuration.getTemplate("initialHandStillInPlay.ftl")).willReturn(template);
+
+		doAnswer((InvocationOnMock invocationOnMock) -> {
+			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			writer.append("The initial deal content");
+			return null;
+		}).when(template).process(eq(expectedParameters), any(Writer.class));
+
+		String expectedPlainTextOutputSpeech = "The initial deal content";
 		String expectedPlainTextReprompt = "What would you like to do?";
 
 		CardDeck expectedCardDeckOnSession = cardDeck();
@@ -93,7 +111,7 @@ public class PontoonGameActionsTest {
 	}
 
 	@Test
-	public void shouldDealInitialHandGivenHandWithAceAndAceIsLow() {
+	public void shouldDealInitialHandGivenHandWithAceAndAceIsLow() throws Exception {
 		// Given
 		Session session = session();
 		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(false);
@@ -101,7 +119,23 @@ public class PontoonGameActionsTest {
 		CardDeck cardDeck = cardDeck(ACE_OF_CLUBS, QUEEN_OF_HEARTS);
 		given(sessionSupport.getCardDeckFromSession(session)).willReturn(cardDeck);
 
-		String expectedPlainTextOutputSpeech = "I have dealt you the Ace of CLUBS, and the Queen of HEARTS. Ace is low. Your score is 11. You can twist or stick. What would you like to do?";
+		Map expectedParameters = new HashMap();
+		expectedParameters.put("gameAlreadyStarted", true);
+		expectedParameters.put("score", 11);
+		expectedParameters.put("handContainsAnAce", true);
+		expectedParameters.put("hand", "the Ace of CLUBS, and the Queen of HEARTS");
+		expectedParameters.put("aceIsHigh", false);
+
+		Template template = mock(Template.class);
+		given(configuration.getTemplate("initialHandStillInPlay.ftl")).willReturn(template);
+
+		doAnswer((InvocationOnMock invocationOnMock) -> {
+			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			writer.append("The initial deal content");
+			return null;
+		}).when(template).process(eq(expectedParameters), any(Writer.class));
+
+		String expectedPlainTextOutputSpeech = "The initial deal content";
 		String expectedPlainTextReprompt = "What would you like to do?";
 
 		CardDeck expectedCardDeckOnSession = cardDeck();
@@ -120,7 +154,7 @@ public class PontoonGameActionsTest {
 	}
 
 	@Test
-	public void shouldDealInitialHandGivenBustHandWithAceIsHigh() {
+	public void shouldDealInitialHandGivenBustHandWithAceIsHigh() throws Exception {
 		// Given
 		Session session = session();
 		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(true);
@@ -128,7 +162,23 @@ public class PontoonGameActionsTest {
 		CardDeck cardDeck = cardDeck(ACE_OF_CLUBS, ACE_OF_SPADES);
 		given(sessionSupport.getCardDeckFromSession(session)).willReturn(cardDeck);
 
-		String expectedPlainTextOutputSpeech = "Bad luck buster! I have dealt you the Ace of CLUBS, and the Ace of SPADES; and ace was high. Your score is 22, and you are bust!";
+		Map expectedParameters = new HashMap();
+		expectedParameters.put("gameAlreadyStarted", true);
+		expectedParameters.put("score", 22);
+		expectedParameters.put("handContainsAnAce", true);
+		expectedParameters.put("hand", "the Ace of CLUBS, and the Ace of SPADES");
+		expectedParameters.put("aceIsHigh", true);
+
+		Template template = mock(Template.class);
+		given(configuration.getTemplate("initialHandBust.ftl")).willReturn(template);
+
+		doAnswer((InvocationOnMock invocationOnMock) -> {
+			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			writer.append("The initial deal content");
+			return null;
+		}).when(template).process(eq(expectedParameters), any(Writer.class));
+
+		String expectedPlainTextOutputSpeech = "The initial deal content";
 
 		CardDeck expectedCardDeckOnSession = cardDeck();
 		Hand expectedHandOnSession = hand(ACE_OF_CLUBS, ACE_OF_SPADES);
@@ -145,7 +195,7 @@ public class PontoonGameActionsTest {
 	}
 
 	@Test
-	public void shouldDealInitialHandGivenWinningHandWithAceIsHigh() {
+	public void shouldDealInitialHandGivenWinningHandWithAceIsHigh() throws Exception {
 		// Given
 		Session session = session();
 		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(true);
@@ -153,7 +203,23 @@ public class PontoonGameActionsTest {
 		CardDeck cardDeck = cardDeck(ACE_OF_CLUBS, QUEEN_OF_HEARTS);
 		given(sessionSupport.getCardDeckFromSession(session)).willReturn(cardDeck);
 
-		String expectedPlainTextOutputSpeech = "Winner winner, chicken dinner! I have dealt you the Ace of CLUBS, and the Queen of HEARTS; and ace was high. Your score is 21. That's pontoon!";
+		Map expectedParameters = new HashMap();
+		expectedParameters.put("gameAlreadyStarted", true);
+		expectedParameters.put("score", 21);
+		expectedParameters.put("handContainsAnAce", true);
+		expectedParameters.put("hand", "the Ace of CLUBS, and the Queen of HEARTS");
+		expectedParameters.put("aceIsHigh", true);
+
+		Template template = mock(Template.class);
+		given(configuration.getTemplate("initialHandWin.ftl")).willReturn(template);
+
+		doAnswer((InvocationOnMock invocationOnMock) -> {
+			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			writer.append("The initial deal content");
+			return null;
+		}).when(template).process(eq(expectedParameters), any(Writer.class));
+
+		String expectedPlainTextOutputSpeech = "The initial deal content";
 
 		CardDeck expectedCardDeckOnSession = cardDeck();
 		Hand expectedHandOnSession = hand(ACE_OF_CLUBS, QUEEN_OF_HEARTS);
@@ -170,7 +236,7 @@ public class PontoonGameActionsTest {
 	}
 
 	@Test
-	public void shouldTwistGivenHandWithNoAces() {
+	public void shouldTwistGivenHandWithNoAces() throws Exception {
 		// Given
 		Session session = session();
 		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(false);
@@ -181,7 +247,23 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(FIVE_OF_CLUBS, QUEEN_OF_HEARTS);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		String expectedPlainTextOutputSpeech = "Your hand is now the Five of CLUBS, the Queen of HEARTS, and the Two of SPADES. Your score is 17. You can twist or stick. What would you like to do?";
+		Map expectedParameters = new HashMap();
+		expectedParameters.put("gameAlreadyStarted", true);
+		expectedParameters.put("score", 17);
+		expectedParameters.put("handContainsAnAce", false);
+		expectedParameters.put("hand", "the Five of CLUBS, the Queen of HEARTS, and the Two of SPADES");
+		expectedParameters.put("aceIsHigh", false);
+
+		Template template = mock(Template.class);
+		given(configuration.getTemplate("handStillInPlay.ftl")).willReturn(template);
+
+		doAnswer((InvocationOnMock invocationOnMock) -> {
+			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			writer.append("The twist content");
+			return null;
+		}).when(template).process(eq(expectedParameters), any(Writer.class));
+
+		String expectedPlainTextOutputSpeech = "The twist content";
 		String expectedPlainTextReprompt = "What would you like to do?";
 
 		CardDeck expectedCardDeckOnSession = cardDeck();
@@ -200,7 +282,7 @@ public class PontoonGameActionsTest {
 	}
 
 	@Test
-	public void shouldTwistGivenHandWithAcesAndAceIsLow() {
+	public void shouldTwistGivenHandWithAcesAndAceIsLow() throws Exception {
 		// Given
 		Session session = session();
 		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(false);
@@ -211,7 +293,23 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(FIVE_OF_CLUBS, QUEEN_OF_HEARTS);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		String expectedPlainTextOutputSpeech = "Your hand is now the Five of CLUBS, the Queen of HEARTS, and the Ace of CLUBS. Ace is low. Your score is 16. You can twist or stick. What would you like to do?";
+		Map expectedParameters = new HashMap();
+		expectedParameters.put("gameAlreadyStarted", true);
+		expectedParameters.put("score", 16);
+		expectedParameters.put("handContainsAnAce", true);
+		expectedParameters.put("hand", "the Five of CLUBS, the Queen of HEARTS, and the Ace of CLUBS");
+		expectedParameters.put("aceIsHigh", false);
+
+		Template template = mock(Template.class);
+		given(configuration.getTemplate("handStillInPlay.ftl")).willReturn(template);
+
+		doAnswer((InvocationOnMock invocationOnMock) -> {
+			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			writer.append("The twist content");
+			return null;
+		}).when(template).process(eq(expectedParameters), any(Writer.class));
+
+		String expectedPlainTextOutputSpeech = "The twist content";
 		String expectedPlainTextReprompt = "What would you like to do?";
 
 		CardDeck expectedCardDeckOnSession = cardDeck();
@@ -230,7 +328,7 @@ public class PontoonGameActionsTest {
 	}
 
 	@Test
-	public void shouldTwistGivenHandWithAcesAndAceIsHigh() {
+	public void shouldTwistGivenHandWithAcesAndAceIsHigh() throws Exception {
 		// Given
 		Session session = session();
 		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(true);
@@ -241,7 +339,23 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(FIVE_OF_CLUBS, TWO_OF_SPADES);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		String expectedPlainTextOutputSpeech = "Your hand is now the Five of CLUBS, the Two of SPADES, and the Ace of CLUBS. Ace is high. Your score is 18. You can twist or stick. What would you like to do?";
+		Map expectedParameters = new HashMap();
+		expectedParameters.put("gameAlreadyStarted", true);
+		expectedParameters.put("score", 18);
+		expectedParameters.put("handContainsAnAce", true);
+		expectedParameters.put("hand", "the Five of CLUBS, the Two of SPADES, and the Ace of CLUBS");
+		expectedParameters.put("aceIsHigh", true);
+
+		Template template = mock(Template.class);
+		given(configuration.getTemplate("handStillInPlay.ftl")).willReturn(template);
+
+		doAnswer((InvocationOnMock invocationOnMock) -> {
+			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			writer.append("The twist content");
+			return null;
+		}).when(template).process(eq(expectedParameters), any(Writer.class));
+
+		String expectedPlainTextOutputSpeech = "The twist content";
 		String expectedPlainTextReprompt = "What would you like to do?";
 
 		CardDeck expectedCardDeckOnSession = cardDeck();
@@ -260,7 +374,7 @@ public class PontoonGameActionsTest {
 	}
 
 	@Test
-	public void shouldTwistGivenCardToMakeWinningHandWithAcesAndAceIsLow() {
+	public void shouldTwistGivenCardToMakeWinningHandWithAcesAndAceIsLow() throws Exception {
 		// Given
 		Session session = session();
 		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(false);
@@ -271,7 +385,23 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(TEN_OF_HEARTS, QUEEN_OF_HEARTS);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		String expectedPlainTextOutputSpeech = "Congratulations, you have a winning hand! Your cards are the Ten of HEARTS, the Queen of HEARTS, and the Ace of CLUBS. Ace is low. Nice one!";
+		Map expectedParameters = new HashMap();
+		expectedParameters.put("gameAlreadyStarted", true);
+		expectedParameters.put("score", 21);
+		expectedParameters.put("handContainsAnAce", true);
+		expectedParameters.put("hand", "the Ten of HEARTS, the Queen of HEARTS, and the Ace of CLUBS");
+		expectedParameters.put("aceIsHigh", false);
+
+		Template template = mock(Template.class);
+		given(configuration.getTemplate("win.ftl")).willReturn(template);
+
+		doAnswer((InvocationOnMock invocationOnMock) -> {
+			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			writer.append("The twist content");
+			return null;
+		}).when(template).process(eq(expectedParameters), any(Writer.class));
+
+		String expectedPlainTextOutputSpeech = "The twist content";
 
 		CardDeck expectedCardDeckOnSession = cardDeck();
 		Hand expectedHandOnSession = hand(TEN_OF_HEARTS, QUEEN_OF_HEARTS, ACE_OF_CLUBS);
@@ -288,7 +418,7 @@ public class PontoonGameActionsTest {
 	}
 
 	@Test
-	public void shouldTwistGivenCardToMakeWinningHandWithAcesAndAceIsHigh() {
+	public void shouldTwistGivenCardToMakeWinningHandWithAcesAndAceIsHigh() throws Exception {
 		// Given
 		Session session = session();
 		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(true);
@@ -299,7 +429,23 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(FIVE_OF_CLUBS, TWO_OF_SPADES, THREE_OF_SPADES);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		String expectedPlainTextOutputSpeech = "Congratulations, you have a winning hand! Your cards are the Five of CLUBS, the Two of SPADES, the Three of SPADES, and the Ace of CLUBS. Ace is high. Nice one!";
+		Map expectedParameters = new HashMap();
+		expectedParameters.put("gameAlreadyStarted", true);
+		expectedParameters.put("score", 21);
+		expectedParameters.put("handContainsAnAce", true);
+		expectedParameters.put("hand", "the Five of CLUBS, the Two of SPADES, the Three of SPADES, and the Ace of CLUBS");
+		expectedParameters.put("aceIsHigh", true);
+
+		Template template = mock(Template.class);
+		given(configuration.getTemplate("win.ftl")).willReturn(template);
+
+		doAnswer((InvocationOnMock invocationOnMock) -> {
+			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			writer.append("The twist content");
+			return null;
+		}).when(template).process(eq(expectedParameters), any(Writer.class));
+
+		String expectedPlainTextOutputSpeech = "The twist content";
 
 		CardDeck expectedCardDeckOnSession = cardDeck();
 		Hand expectedHandOnSession = hand(FIVE_OF_CLUBS, TWO_OF_SPADES, THREE_OF_SPADES, ACE_OF_CLUBS);
@@ -316,7 +462,7 @@ public class PontoonGameActionsTest {
 	}
 
 	@Test
-	public void shouldTwistGivenCardToMakeWinningHand() {
+	public void shouldTwistGivenCardToMakeWinningHand() throws Exception {
 		// Given
 		Session session = session();
 		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(true);
@@ -327,7 +473,23 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(FIVE_OF_CLUBS, SIX_OF_CLUBS);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		String expectedPlainTextOutputSpeech = "Congratulations, you have a winning hand! Your cards are the Five of CLUBS, the Six of CLUBS, and the Queen of HEARTS. Nice one!";
+		Map expectedParameters = new HashMap();
+		expectedParameters.put("gameAlreadyStarted", true);
+		expectedParameters.put("score", 21);
+		expectedParameters.put("handContainsAnAce", false);
+		expectedParameters.put("hand", "the Five of CLUBS, the Six of CLUBS, and the Queen of HEARTS");
+		expectedParameters.put("aceIsHigh", true);
+
+		Template template = mock(Template.class);
+		given(configuration.getTemplate("win.ftl")).willReturn(template);
+
+		doAnswer((InvocationOnMock invocationOnMock) -> {
+			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			writer.append("The twist content");
+			return null;
+		}).when(template).process(eq(expectedParameters), any(Writer.class));
+
+		String expectedPlainTextOutputSpeech = "The twist content";
 
 		CardDeck expectedCardDeckOnSession = cardDeck();
 		Hand expectedHandOnSession = hand(FIVE_OF_CLUBS, SIX_OF_CLUBS, QUEEN_OF_HEARTS);
@@ -344,7 +506,7 @@ public class PontoonGameActionsTest {
 	}
 
 	@Test
-	public void shouldTwistGivenCardToMakeHandBustWithAcesAndAceIsLow() {
+	public void shouldTwistGivenCardToMakeHandBustWithAcesAndAceIsLow() throws Exception {
 		// Given
 		Session session = session();
 		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(false);
@@ -355,7 +517,23 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(TEN_OF_HEARTS, FIVE_OF_CLUBS, SIX_OF_CLUBS);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		String expectedPlainTextOutputSpeech = "Bad times! You've bust! Your hand is the Ten of HEARTS, the Five of CLUBS, the Six of CLUBS, and the Ace of CLUBS. Ace is low. Your score is 22. That was one twist too far. Better luck next time!!";
+		Map expectedParameters = new HashMap();
+		expectedParameters.put("gameAlreadyStarted", true);
+		expectedParameters.put("score", 22);
+		expectedParameters.put("handContainsAnAce", true);
+		expectedParameters.put("hand", "the Ten of HEARTS, the Five of CLUBS, the Six of CLUBS, and the Ace of CLUBS");
+		expectedParameters.put("aceIsHigh", false);
+
+		Template template = mock(Template.class);
+		given(configuration.getTemplate("bust.ftl")).willReturn(template);
+
+		doAnswer((InvocationOnMock invocationOnMock) -> {
+			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			writer.append("The bust content");
+			return null;
+		}).when(template).process(eq(expectedParameters), any(Writer.class));
+
+		String expectedPlainTextOutputSpeech = "The bust content";
 
 		CardDeck expectedCardDeckOnSession = cardDeck();
 		Hand expectedHandOnSession = hand(TEN_OF_HEARTS, FIVE_OF_CLUBS, SIX_OF_CLUBS, ACE_OF_CLUBS);
@@ -372,7 +550,7 @@ public class PontoonGameActionsTest {
 	}
 
 	@Test
-	public void shouldTwistGivenCardToMakeHandBustWithAcesAndAceIsHigh() {
+	public void shouldTwistGivenCardToMakeHandBustWithAcesAndAceIsHigh() throws Exception {
 		// Given
 		Session session = session();
 		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(true);
@@ -383,7 +561,23 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(FIVE_OF_CLUBS, TEN_OF_HEARTS);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		String expectedPlainTextOutputSpeech = "Bad times! You've bust! Your hand is the Five of CLUBS, the Ten of HEARTS, and the Ace of CLUBS. Ace is high. Your score is 26. That was one twist too far. Better luck next time!!";
+		Map expectedParameters = new HashMap();
+		expectedParameters.put("gameAlreadyStarted", true);
+		expectedParameters.put("score", 26);
+		expectedParameters.put("handContainsAnAce", true);
+		expectedParameters.put("hand", "the Five of CLUBS, the Ten of HEARTS, and the Ace of CLUBS");
+		expectedParameters.put("aceIsHigh", true);
+
+		Template template = mock(Template.class);
+		given(configuration.getTemplate("bust.ftl")).willReturn(template);
+
+		doAnswer((InvocationOnMock invocationOnMock) -> {
+			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			writer.append("The bust content");
+			return null;
+		}).when(template).process(eq(expectedParameters), any(Writer.class));
+
+		String expectedPlainTextOutputSpeech = "The bust content";
 
 		CardDeck expectedCardDeckOnSession = cardDeck();
 		Hand expectedHandOnSession = hand(FIVE_OF_CLUBS, TEN_OF_HEARTS, ACE_OF_CLUBS);
@@ -400,7 +594,7 @@ public class PontoonGameActionsTest {
 	}
 
 	@Test
-	public void shouldTwistGivenCardToMakeHandBust() {
+	public void shouldTwistGivenCardToMakeHandBust() throws Exception {
 		// Given
 		Session session = session();
 		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(false);
@@ -411,7 +605,23 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(FIVE_OF_CLUBS, TEN_OF_HEARTS);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		String expectedPlainTextOutputSpeech = "Bad times! You've bust! Your hand is the Five of CLUBS, the Ten of HEARTS, and the Queen of HEARTS. Your score is 25. That was one twist too far. Better luck next time!!";
+		Map expectedParameters = new HashMap();
+		expectedParameters.put("gameAlreadyStarted", true);
+		expectedParameters.put("score", 25);
+		expectedParameters.put("handContainsAnAce", false);
+		expectedParameters.put("hand", "the Five of CLUBS, the Ten of HEARTS, and the Queen of HEARTS");
+		expectedParameters.put("aceIsHigh", false);
+
+		Template template = mock(Template.class);
+		given(configuration.getTemplate("bust.ftl")).willReturn(template);
+
+		doAnswer((InvocationOnMock invocationOnMock) -> {
+			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			writer.append("The bust content");
+			return null;
+		}).when(template).process(eq(expectedParameters), any(Writer.class));
+
+		String expectedPlainTextOutputSpeech = "The bust content";
 
 		CardDeck expectedCardDeckOnSession = cardDeck();
 		Hand expectedHandOnSession = hand(FIVE_OF_CLUBS, TEN_OF_HEARTS, QUEEN_OF_HEARTS);
@@ -428,7 +638,7 @@ public class PontoonGameActionsTest {
 	}
 
 	@Test
-	public void shouldStickGivenHandWithAcesAndAceIsLow() {
+	public void shouldStickGivenHandWithAcesAndAceIsLow() throws Exception {
 		// Given
 		Session session = session();
 		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(false);
@@ -436,7 +646,23 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(FIVE_OF_CLUBS, ACE_OF_CLUBS);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		String expectedPlainTextOutputSpeech = "Your final score is 6 with a hand of the Five of CLUBS, and the Ace of CLUBS. Ace is low.";
+		Map expectedParameters = new HashMap();
+		expectedParameters.put("gameAlreadyStarted", true);
+		expectedParameters.put("score", 6);
+		expectedParameters.put("handContainsAnAce", true);
+		expectedParameters.put("hand", "the Five of CLUBS, and the Ace of CLUBS");
+		expectedParameters.put("aceIsHigh", false);
+
+		Template template = mock(Template.class);
+		given(configuration.getTemplate("stick.ftl")).willReturn(template);
+
+		doAnswer((InvocationOnMock invocationOnMock) -> {
+			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			writer.append("The stick content");
+			return null;
+		}).when(template).process(eq(expectedParameters), any(Writer.class));
+
+		String expectedPlainTextOutputSpeech = "The stick content";
 
 		// When
 		SpeechletResponse speechletResponse = pontoonGameActions.stick(session);
@@ -451,7 +677,7 @@ public class PontoonGameActionsTest {
 	}
 
 	@Test
-	public void shouldStickGivenHandWithAcesAndAceIsHigh() {
+	public void shouldStickGivenHandWithAcesAndAceIsHigh() throws Exception {
 		// Given
 		Session session = session();
 		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(true);
@@ -459,7 +685,23 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(FIVE_OF_CLUBS, ACE_OF_CLUBS);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		String expectedPlainTextOutputSpeech = "Your final score is 16 with a hand of the Five of CLUBS, and the Ace of CLUBS. Ace is high.";
+		Map expectedParameters = new HashMap();
+		expectedParameters.put("gameAlreadyStarted", true);
+		expectedParameters.put("score", 16);
+		expectedParameters.put("handContainsAnAce", true);
+		expectedParameters.put("hand", "the Five of CLUBS, and the Ace of CLUBS");
+		expectedParameters.put("aceIsHigh", true);
+
+		Template template = mock(Template.class);
+		given(configuration.getTemplate("stick.ftl")).willReturn(template);
+
+		doAnswer((InvocationOnMock invocationOnMock) -> {
+			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			writer.append("The stick content");
+			return null;
+		}).when(template).process(eq(expectedParameters), any(Writer.class));
+
+		String expectedPlainTextOutputSpeech = "The stick content";
 
 		// When
 		SpeechletResponse speechletResponse = pontoonGameActions.stick(session);
@@ -474,7 +716,7 @@ public class PontoonGameActionsTest {
 	}
 
 	@Test
-	public void shouldStick() {
+	public void shouldStick() throws Exception {
 		// Given
 		Session session = session();
 		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(false);
@@ -482,7 +724,23 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(FIVE_OF_CLUBS, TEN_OF_HEARTS);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		String expectedPlainTextOutputSpeech = "Your final score is 15 with a hand of the Five of CLUBS, and the Ten of HEARTS.";
+		Map expectedParameters = new HashMap();
+		expectedParameters.put("gameAlreadyStarted", true);
+		expectedParameters.put("score", 15);
+		expectedParameters.put("handContainsAnAce", false);
+		expectedParameters.put("hand", "the Five of CLUBS, and the Ten of HEARTS");
+		expectedParameters.put("aceIsHigh", false);
+
+		Template template = mock(Template.class);
+		given(configuration.getTemplate("stick.ftl")).willReturn(template);
+
+		doAnswer((InvocationOnMock invocationOnMock) -> {
+			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			writer.append("The stick content");
+			return null;
+		}).when(template).process(eq(expectedParameters), any(Writer.class));
+
+		String expectedPlainTextOutputSpeech = "The stick content";
 
 		// When
 		SpeechletResponse speechletResponse = pontoonGameActions.stick(session);
@@ -494,6 +752,40 @@ public class PontoonGameActionsTest {
 		verify(sessionSupport, never()).setAceIsHighOnSession(any(), anyBoolean());
 		verify(sessionSupport, never()).setHandOnSession(any(), any());
 		verify(sessionSupport, never()).setCardDeckOnSession(any(), any());
+	}
+
+	@Test
+	public void shouldDetermineIsGameAlreadyStartedGivenAllRequiredSessionAttributes() {
+		// Given
+		Session session = session();
+		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(true);
+
+		CardDeck cardDeck = cardDeck(QUEEN_OF_HEARTS);
+		given(sessionSupport.getCardDeckFromSession(session)).willReturn(cardDeck);
+
+		Hand hand = hand(FIVE_OF_CLUBS, TEN_OF_HEARTS);
+		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
+
+		// When
+		boolean gameAlreadyStarted = pontoonGameActions.isGameAlreadyStarted(session);
+
+		// Then
+		assertThat(gameAlreadyStarted).isTrue();
+	}
+
+	@Test
+	public void shouldDetermineIsGameAlreadyStartedGivenNoRequiredAttributes() {
+		// Given
+		Session session = session();
+		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(null);
+		given(sessionSupport.getCardDeckFromSession(session)).willReturn(null);
+		given(sessionSupport.getHandFromSession(session)).willReturn(null);
+
+		// When
+		boolean gameAlreadyStarted = pontoonGameActions.isGameAlreadyStarted(session);
+
+		// Then
+		assertThat(gameAlreadyStarted).isFalse();
 	}
 
 	@Test
@@ -503,11 +795,18 @@ public class PontoonGameActionsTest {
 		Template template = mock(Template.class);
 		given(configuration.getTemplate("help.ftl")).willReturn(template);
 
+		Map expectedParameters = new HashMap();
+		expectedParameters.put("gameAlreadyStarted", false);
+		expectedParameters.put("score", 0);
+		expectedParameters.put("handContainsAnAce", false);
+		expectedParameters.put("hand", "");
+		expectedParameters.put("aceIsHigh", false);
+
 		doAnswer((InvocationOnMock invocationOnMock) -> {
 			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
 			writer.append("The help content");
 			return null;
-		}).when(template).process(eq(Collections.EMPTY_MAP), any(Writer.class));
+		}).when(template).process(eq(expectedParameters), any(Writer.class));
 
 		String expectedPlainTextOutputSpeech = "The help content";
 		String expectedPlainTextReprompt = "What would you like to do?";
@@ -521,6 +820,7 @@ public class PontoonGameActionsTest {
 				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
 		assertThat(speechletResponse.getReprompt()).hasPlainTextOutputSpeech(expectedPlainTextReprompt);
 	}
+
 	private Session session() {
 		Session session = mock(Session.class);
 		given(session.getSessionId()).willReturn("1234");

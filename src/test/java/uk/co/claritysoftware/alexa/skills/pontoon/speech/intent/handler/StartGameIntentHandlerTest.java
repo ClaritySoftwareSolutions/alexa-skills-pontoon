@@ -1,6 +1,8 @@
 package uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.handler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.co.claritysoftware.alexa.skills.testsupport.SpeechletRequestEnvelopeTestDataFactory.speechletRequestEnvelopeWithIntentName;
 import static uk.co.claritysoftware.alexa.skills.testsupport.SpeechletRequestEnvelopeTestDataFactory.speechletRequestEnvelopeWithIntentNameAndSlots;
@@ -16,6 +18,7 @@ import com.amazon.speech.json.SpeechletRequestEnvelope;
 import com.amazon.speech.slu.Slot;
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
+import uk.co.claritysoftware.alexa.skills.pontoon.exception.GameAlreadyStartedException;
 import uk.co.claritysoftware.alexa.skills.pontoon.session.SessionSupport;
 import uk.co.claritysoftware.alexa.skills.pontoon.speech.PontoonGameActions;
 import uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.PontoonIntent;
@@ -83,6 +86,26 @@ public class StartGameIntentHandlerTest {
 		// Then
 		verify(pontoonGameActions).dealInitialHand(session);
 		verify(sessionSupport).setAceIsHighOnSession(session, true);
+	}
+
+	@Test
+	public void shouldFailToHandleIntentGivenGameAlreadyStarted() {
+		// Given
+		SpeechletRequestEnvelope<IntentRequest> requestEnvelope = speechletRequestEnvelopeWithIntentName("StartGameIntent");
+		Session session = requestEnvelope.getSession();
+
+		given(pontoonGameActions.isGameAlreadyStarted(session)).willReturn(true);
+
+		// When
+		try {
+			intentHandler.handleIntent(requestEnvelope);
+
+			fail("Was expecting a GameAlreadyStartedException");
+		}
+		// Then
+		catch (Exception e) {
+			assertThat(e.getClass()).isEqualTo(GameAlreadyStartedException.class);
+		}
 	}
 
 	@Test

@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -106,7 +106,19 @@ public class PontoonGameActions {
 	public SpeechletResponse help(final Session session) {
 		LOG.debug("help for session id {}", session.getSessionId());
 
-		return helpSpeechletResponse();
+		return helpSpeechletResponse(isGameAlreadyStarted(session));
+	}
+
+	/**
+	 * Determines if there is already a game in play by looking for the required attributes on the session
+	 *
+	 * @param session the {@link Session} containing the {@link CardDeck}, the current {@link Hand} and ace is high flag
+	 * @return true if there is already a game in play
+	 */
+	public boolean isGameAlreadyStarted(final Session session) {
+		return sessionSupport.getAceIsHighFromSession(session) != null &&
+				sessionSupport.getHandFromSession(session) != null &&
+				sessionSupport.getCardDeckFromSession(session) != null;
 	}
 
 	private SpeechletResponse dealInitialHand(final Session session, final boolean aceIsHigh) {
@@ -148,44 +160,42 @@ public class PontoonGameActions {
 	}
 
 	private SpeechletResponse initialHandStillInPlayResponse(final Card card1, final Card card2, final int score, final boolean aceIsHigh) {
-		final String speechText = "I have dealt you the %s of %s, and the %s of %s. %sYour score is %d. You can twist or stick. What would you like to do?";
-
+		List<Card> cards = Arrays.asList(card1, card2);
 		final PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-		speech.setText(String.format(speechText,
-				card1.getCardValue().getName(), card1.getCardSuit(),
-				card2.getCardValue().getName(), card2.getCardSuit(),
-				handContainsAnAce(card1, card2) ? String.format("Ace is %s. ", aceIsHigh ? "high" : "low") : "",
-				score
-		));
+		speech.setText(initialHandStillInPlayContent(score, cardListSentence(cards), handContainsAnAce(cards), aceIsHigh));
 
 		LOG.debug("dealInitialHand response {}", speech.getText());
 		return newAskResponse(speech, reprompt("What would you like to do?"));
 	}
 
-	private SpeechletResponse initialHandWinResponse(final Card card1, final Card card2) {
-		final String speechText = "Winner winner, chicken dinner! I have dealt you the %s of %s, and the %s of %s; and ace was high. Your score is 21. That's pontoon!";
+	private String initialHandStillInPlayContent(final int score, final String cardListSentence, final boolean handContainsAnAce, final boolean aceIsHigh) {
+		return freemarkerTemplateContent("initialHandStillInPlay.ftl", true, score, cardListSentence, handContainsAnAce, aceIsHigh);
+	}
 
+	private SpeechletResponse initialHandWinResponse(final Card card1, final Card card2) {
+		List<Card> cards = Arrays.asList(card1, card2);
 		final PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-		speech.setText(String.format(speechText,
-				card1.getCardValue().getName(), card1.getCardSuit(),
-				card2.getCardValue().getName(), card2.getCardSuit()
-		));
+		speech.setText(initialHandWinContent(21, cardListSentence(cards), true, true));
 
 		LOG.debug("dealInitialHand response {}", speech.getText());
 		return newTellResponse(speech);
 	}
 
-	private SpeechletResponse initialHandBustResponse(final Card card1, final Card card2) {
-		final String speechText = "Bad luck buster! I have dealt you the %s of %s, and the %s of %s; and ace was high. Your score is 22, and you are bust!";
+	private String initialHandWinContent(final int score, final String cardListSentence, final boolean handContainsAnAce, final boolean aceIsHigh) {
+		return freemarkerTemplateContent("initialHandWin.ftl", true, score, cardListSentence, handContainsAnAce, aceIsHigh);
+	}
 
+	private SpeechletResponse initialHandBustResponse(final Card card1, final Card card2) {
+		List<Card> cards = Arrays.asList(card1, card2);
 		final PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-		speech.setText(String.format(speechText,
-				card1.getCardValue().getName(), card1.getCardSuit(),
-				card2.getCardValue().getName(), card2.getCardSuit()
-		));
+		speech.setText(initialHandBustContent(22, cardListSentence(cards), true, true));
 
 		LOG.debug("dealInitialHand response {}", speech.getText());
 		return newTellResponse(speech);
+	}
+
+	private String initialHandBustContent(final int score, final String cardListSentence, final boolean handContainsAnAce, final boolean aceIsHigh) {
+		return freemarkerTemplateContent("initialHandBust.ftl", true, score, cardListSentence, handContainsAnAce, aceIsHigh);
 	}
 
 	private SpeechletResponse twistSpeechletResponse(final Hand hand, final boolean aceIsHigh) {
@@ -198,88 +208,66 @@ public class PontoonGameActions {
 	}
 
 	private SpeechletResponse handStillInPlayResponse(final List<Card> cards, final int score, final boolean aceIsHigh) {
-		StringBuffer speechText = new StringBuffer("Your hand is now")
-				.append(cardListSentence(cards));
-
-		speechText.append(handContainsAnAce(cards) ? String.format("Ace is %s. ", aceIsHigh ? "high" : "low") : "")
-				.append("Your score is ").append(score)
-				.append(". You can twist or stick. What would you like to do?");
-
 		final PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-		speech.setText(speechText.toString());
+		speech.setText(handStillInPlayContent(score, cardListSentence(cards), handContainsAnAce(cards), aceIsHigh));
 
 		LOG.debug("twist response {}", speech.getText());
 		return newAskResponse(speech, reprompt("What would you like to do?"));
 	}
 
+	private String handStillInPlayContent(final int score, final String cardListSentence, final boolean handContainsAnAce, final boolean aceIsHigh) {
+		return freemarkerTemplateContent("handStillInPlay.ftl", true, score, cardListSentence, handContainsAnAce, aceIsHigh);
+	}
+
 	private SpeechletResponse handWinResponse(final List<Card> cards, final boolean aceIsHigh) {
-		StringBuffer speechText = new StringBuffer("Congratulations, you have a winning hand! Your cards are")
-				.append(cardListSentence(cards));
-
-		speechText.append(handContainsAnAce(cards) ? String.format("Ace is %s. ", aceIsHigh ? "high" : "low") : "")
-				.append("Nice one!");
-
 		final PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-		speech.setText(speechText.toString());
+		speech.setText(handWinContent(21, cardListSentence(cards), handContainsAnAce(cards), aceIsHigh));
 
 		LOG.debug("twist response {}", speech.getText());
 		return newTellResponse(speech);
 	}
 
+	private String handWinContent(final int score, final String cardListSentence, final boolean handContainsAnAce, final boolean aceIsHigh) {
+		return freemarkerTemplateContent("win.ftl", true, score, cardListSentence, handContainsAnAce, aceIsHigh);
+	}
+
 	private SpeechletResponse handBustResponse(final List<Card> cards, final int score, final boolean aceIsHigh) {
-		StringBuffer speechText = new StringBuffer("Bad times! You've bust! Your hand is")
-				.append(cardListSentence(cards));
-
-		speechText.append(handContainsAnAce(cards) ? String.format("Ace is %s. ", aceIsHigh ? "high" : "low") : "")
-				.append("Your score is ").append(score)
-				.append(". That was one twist too far. Better luck next time!!");
-
 		final PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-		speech.setText(speechText.toString());
+		speech.setText(bustContent(score, cardListSentence(cards), handContainsAnAce(cards), aceIsHigh));
 
 		LOG.debug("twist response {}", speech.getText());
 		return newTellResponse(speech);
+	}
+
+	private String bustContent(final int score, final String cardListSentence, final boolean handContainsAnAce, final boolean aceIsHigh) {
+		return freemarkerTemplateContent("bust.ftl", true, score, cardListSentence, handContainsAnAce, aceIsHigh);
 	}
 
 	private SpeechletResponse stickSpeechletResponse(final Hand hand, final boolean aceIsHigh) {
 		List<Card> cardsInHand = hand.getCards();
 		int score = hand.getScore(aceIsHigh);
 
-		StringBuffer speechText = new StringBuffer("Your final score is ").append(score)
-				.append(" with a hand of")
-				.append(cardListSentence(cardsInHand));
-
-		speechText.append(handContainsAnAce(cardsInHand) ? String.format("Ace is %s.", aceIsHigh ? "high" : "low") : "");
-
 		final PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-		speech.setText(speechText.toString().trim());
+		speech.setText(stickContent(score, cardListSentence(cardsInHand), handContainsAnAce(cardsInHand), aceIsHigh));
 
 		LOG.debug("stick response {}", speech.getText());
 		return newTellResponse(speech);
 	}
 
-	private SpeechletResponse helpSpeechletResponse() {
-		final PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-		speech.setText(helpContent());
+	private String stickContent(final int score, final String cardListSentence, final boolean handContainsAnAce, final boolean aceIsHigh) {
+		return freemarkerTemplateContent("stick.ftl", true, score, cardListSentence, handContainsAnAce, aceIsHigh);
+	}
 
-//		speech.setText(speechText.toString().trim());
+	private SpeechletResponse helpSpeechletResponse(boolean gameAlreadyStarted) {
+		final PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+		speech.setText(helpContent(gameAlreadyStarted));
 
 		LOG.debug("help response {}", speech.getText());
 		return newAskResponse(speech, reprompt("What would you like to do?"));
 	}
 
-	private String helpContent() {
-		Map parameters = Collections.EMPTY_MAP;
-		Writer writer = new StringWriter();
-		try {
-			Template template = configuration.getTemplate("help.ftl");
-			template.process(parameters, writer);
-		}
-		catch (IOException | TemplateException e) {
-			LOG.error("Error processing help template", e);
-		}
-		return writer.toString();
-
+	private String helpContent(boolean gameAlreadyStarted) {
+		return freemarkerTemplateContent("help.ftl", gameAlreadyStarted, 0, "", false, false);
 	}
 
 	private String cardListSentence(final List<Card> cards) {
@@ -293,12 +281,37 @@ public class PontoonGameActions {
 			String cardText = cardsText.next();
 
 			if (cardsText.hasNext()) {
-				sentence.append(" ").append(cardText).append(",");
+				sentence.append(cardText).append(", ");
 			} else {
-				sentence.append(" and ").append(cardText).append(". ");
+				sentence.append("and ").append(cardText);
 			}
 		}
 
 		return sentence.toString();
+	}
+
+	private String freemarkerTemplateContent(final String templateName, final boolean gameAlreadyStarted, final int score, final String cardListSentence, final boolean handContainsAnAce,
+			final boolean aceIsHigh) {
+		Map<String, Object> parameters = standardParametersMapForTemplates(gameAlreadyStarted, score, cardListSentence, handContainsAnAce, aceIsHigh);
+
+		Writer writer = new StringWriter();
+		try {
+			Template template = configuration.getTemplate(templateName);
+			template.process(parameters, writer);
+		} catch (IOException | TemplateException e) {
+			LOG.error("Error processing " + templateName + " template", e);
+		}
+		return writer.toString();
+	}
+
+	public Map<String, Object> standardParametersMapForTemplates(final boolean gameAlreadyStarted, final int score, final String cardListSentence, final boolean handContainsAnAce,
+			final boolean aceIsHigh) {
+		Map<String, Object> parameters = new HashMap<>();
+		parameters.put("gameAlreadyStarted", gameAlreadyStarted);
+		parameters.put("score", score);
+		parameters.put("hand", cardListSentence);
+		parameters.put("handContainsAnAce", handContainsAnAce);
+		parameters.put("aceIsHigh", aceIsHigh);
+		return parameters;
 	}
 }

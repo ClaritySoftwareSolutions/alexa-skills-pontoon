@@ -46,8 +46,8 @@ public class SessionSupport {
 		session.setAttribute(ACE_IS_HIGH, aceIsHigh);
 	}
 
-	public boolean getAceIsHighFromSession(final Session session) {
-		return (boolean) session.getAttribute(ACE_IS_HIGH);
+	public Boolean getAceIsHighFromSession(final Session session) {
+		return (Boolean) session.getAttribute(ACE_IS_HIGH);
 	}
 
 	private String serializeCardDeck(final CardDeck cardDeck) {

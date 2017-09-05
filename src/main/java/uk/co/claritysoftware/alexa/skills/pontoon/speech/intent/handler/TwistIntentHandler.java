@@ -17,17 +17,15 @@ import uk.co.claritysoftware.alexa.skills.speech.intent.IntentHandler;
  * {@link IntentHandler} for the Twist intent
  */
 @Component
-public class TwistIntentHandler implements IntentHandler {
+public class TwistIntentHandler extends MidGameIntentHandler {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TwistIntentHandler.class);
 
 	private static final PontoonIntent HANDLED_INTENT = PontoonIntent.TWIST_INTENT;
 
-	private final PontoonGameActions pontoonGameActions;
-
 	@Autowired
 	public TwistIntentHandler(final PontoonGameActions pontoonGameActions) {
-		this.pontoonGameActions = pontoonGameActions;
+		super(pontoonGameActions);
 	}
 
 	@Override
@@ -36,8 +34,8 @@ public class TwistIntentHandler implements IntentHandler {
 	}
 
 	@Override
-	public SpeechletResponse handleIntent(final SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
-		LOG.debug("handleIntent requestId={}, sessionId={}", requestEnvelope.getRequest().getRequestId(),
+	SpeechletResponse doIntent(final SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
+		LOG.debug("doIntent requestId={}, sessionId={}", requestEnvelope.getRequest().getRequestId(),
 				requestEnvelope.getSession().getSessionId());
 
 		Session session = requestEnvelope.getSession();

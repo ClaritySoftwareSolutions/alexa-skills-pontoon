@@ -17,13 +17,11 @@ import uk.co.claritysoftware.alexa.skills.speech.intent.IntentHandler;
  * {@link IntentHandler} for the Stick intent
  */
 @Component
-public class StickIntentHandler implements IntentHandler {
+public class StickIntentHandler extends MidGameIntentHandler {
 
 	private static final Logger LOG = LoggerFactory.getLogger(StickIntentHandler.class);
 
 	private static final PontoonIntent HANDLED_INTENT = PontoonIntent.STICK_INTENT;
-
-	private final PontoonGameActions pontoonGameActions;
 
 	@Override
 	public boolean handles(final AlexaIntent alexaIntent) {
@@ -32,12 +30,12 @@ public class StickIntentHandler implements IntentHandler {
 
 	@Autowired
 	public StickIntentHandler(final PontoonGameActions pontoonGameActions) {
-		this.pontoonGameActions = pontoonGameActions;
+		super(pontoonGameActions);
 	}
 
 	@Override
-	public SpeechletResponse handleIntent(final SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
-		LOG.debug("handleIntent requestId={}, sessionId={}", requestEnvelope.getRequest().getRequestId(),
+	SpeechletResponse doIntent(final SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
+		LOG.debug("doIntent requestId={}, sessionId={}", requestEnvelope.getRequest().getRequestId(),
 				requestEnvelope.getSession().getSessionId());
 
 		Session session = requestEnvelope.getSession();

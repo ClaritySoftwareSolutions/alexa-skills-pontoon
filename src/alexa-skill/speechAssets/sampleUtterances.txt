@@ -1,8 +1,19 @@
+StartGameIntent to start
+StartGameIntent to start a game
+StartGameIntent to start a new game
+StartGameIntent to start the game
 StartGameIntent to start a game where ace is {aceValue}
-StartGameIntent with aces {aceValue}
-StartGameIntent where ace is {aceValue}
+StartGameIntent to start a new game where ace is {aceValue}
+StartGameIntent to start the game where ace is {aceValue}
+StartGameIntent to start a game with aces {aceValue}
+StartGameIntent to start a new game with aces {aceValue}
+StartGameIntent to start the game with aces {aceValue}
 TwistIntent twist
 StickIntent stick
 AMAZON.HelpIntent help
-AMAZON.HelpIntent how do I play this game?
+AMAZON.HelpIntent how do I play
+AMAZON.HelpIntent how do I play this game
+AMAZON.HelpIntent tell me how to play
+AMAZON.HelpIntent tell me about this game
+
 

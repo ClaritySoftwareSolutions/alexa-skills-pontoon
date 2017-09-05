@@ -43,7 +43,7 @@ public class PontoonSpeechletIT {
 		SpeechletRequestEnvelope<LaunchRequest> requestEnvelope = launchSpeechletRequestEnvelopeWithSession(session);
 
 		Pattern expectedSpeechTextPattern = Pattern
-				.compile("^I have dealt you the \\w+ of \\w+, and the \\w+ of \\w+\\. (Ace is (high|low)\\. )?Your score is \\d{1,2}\\. You can twist or stick. What would you like to do\\?$");
+				.compile("^I have dealt you the \\w+ of \\w+, and the \\w+ of \\w+\\.\n(Ace is (high|low)\\.\n)?Your score is \\d{1,2}\\.\nYou can twist or stick. What would you like to do\\?");
 		String expectedReprompt = "What would you like to do?";
 
 		// When
