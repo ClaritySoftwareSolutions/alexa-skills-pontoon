@@ -4,7 +4,7 @@
 	<groupId>uk.co.claritysoftware</groupId>
 	<artifactId>alexa-skills-pontoon</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 
 	<name>Alexa Pontoon Game Skill</name>
 	<description>Alexa Skill written in Java to play the card game Pontoon</description>
