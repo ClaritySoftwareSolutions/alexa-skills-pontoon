@@ -60,7 +60,7 @@ public class PontoonGameActions {
 	}
 
 	/**
-	 * Performs the twist action by dealing another card from the {@ink CardDeck}
+	 * Performs the twist action by dealing another card from the {@link CardDeck}
 	 *
 	 * @param session the {@link Session} containing the {@link CardDeck}, the current {@link Hand} and ace is high flag
 	 * @return a {@link SpeechletResponse} describing the dealt hand and the current score

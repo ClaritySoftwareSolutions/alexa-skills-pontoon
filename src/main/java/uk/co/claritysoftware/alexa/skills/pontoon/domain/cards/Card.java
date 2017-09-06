@@ -24,6 +24,9 @@ public final class Card {
 	}
 
 	/**
+	 * Returns the numeric scoring value of the card
+	 *
+	 * @param aceIsHIgh flag to determine if ace is high
 	 * @return the numeric value of the card
 	 */
 	public int getValue(final boolean aceIsHIgh) {
