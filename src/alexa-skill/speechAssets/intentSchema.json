@@ -1,0 +1,25 @@
+{
+  "intents": [
+    {
+      "intent": "StartGameIntent",
+      "slots": [
+        {
+          "name": "aceValue",
+          "type": "ACE_VALUES"
+        }
+      ]
+    },
+    {
+      "intent": "TwistIntent"
+    },
+    {
+      "intent": "StickIntent"
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    }
+  ]
+}
