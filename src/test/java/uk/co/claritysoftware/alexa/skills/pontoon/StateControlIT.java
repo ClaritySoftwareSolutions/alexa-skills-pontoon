@@ -61,8 +61,7 @@ public class StateControlIT {
 						.build())
 				.build();
 
-		Pattern expectedSpeechTextPattern = Pattern
-				.compile("^Welcome to Pontoon");
+		Pattern expectedSpeechTextPattern = Pattern.compile("^Welcome to Pontoon");
 		String expectedReprompt = "What would you like to do?";
 
 		// When
@@ -92,8 +91,7 @@ public class StateControlIT {
 						.build())
 				.build();
 
-		Pattern expectedSpeechTextPattern = Pattern
-				.compile("^Your hand is now the");
+		Pattern expectedSpeechTextPattern = Pattern.compile("^Your hand is now the");
 		String expectedReprompt = "What would you like to do?";
 
 		// When
@@ -120,8 +118,7 @@ public class StateControlIT {
 						.build())
 				.build();
 
-		Pattern expectedSpeechTextPattern = Pattern
-				.compile("^Welcome to Pontoon");
+		Pattern expectedSpeechTextPattern = Pattern.compile("^Welcome to Pontoon");
 		String expectedReprompt = "What would you like to do?";
 
 		// When
@@ -150,8 +147,7 @@ public class StateControlIT {
 						.build())
 				.build();
 
-		Pattern expectedSpeechTextPattern = Pattern
-				.compile("^Your final score is");
+		Pattern expectedSpeechTextPattern = Pattern.compile("^Your final score is");
 
 		// When
 		SpeechletResponse speechletResponse = pontoonSpeechlet.onIntent(requestEnvelope);
@@ -177,8 +173,7 @@ public class StateControlIT {
 						.build())
 				.build();
 
-		Pattern expectedSpeechTextPattern = Pattern
-				.compile("^Pontoon is a card game");
+		Pattern expectedSpeechTextPattern = Pattern.compile("^Pontoon is a card game");
 		String expectedReprompt = "What would you like to do?";
 
 		// When
@@ -190,6 +185,56 @@ public class StateControlIT {
 				.hasPlainTextOutputSpeech(expectedSpeechTextPattern);
 		RepromptAssert.assertThat(speechletResponse.getReprompt())
 				.hasPlainTextOutputSpeech(expectedReprompt);
+	}
+
+	@Test
+	public void shouldGetStickResponseGivenStopIntentAndGameStarted() {
+		// Given
+		startGame();
+
+		SpeechletRequestEnvelope<IntentRequest> requestEnvelope = speechletRequestEnvelope()
+				.withSession(session)
+				.withRequest(IntentRequest.builder()
+						.withRequestId("12345")
+						.withIntent(Intent.builder()
+								.withName("AMAZON.StopIntent")
+								.build())
+						.build())
+				.build();
+
+		Pattern expectedSpeechTextPattern = Pattern.compile("^Your final score is");
+
+		// When
+		SpeechletResponse speechletResponse = pontoonSpeechlet.onIntent(requestEnvelope);
+
+		// Then
+		assertThat(speechletResponse)
+				.isATellResponse()
+				.hasPlainTextOutputSpeech(expectedSpeechTextPattern);
+	}
+
+	@Test
+	public void shouldGetStopResponseGivenStopIntentAndGameNotStarted() {
+		// Given
+		SpeechletRequestEnvelope<IntentRequest> requestEnvelope = speechletRequestEnvelope()
+				.withSession(session)
+				.withRequest(IntentRequest.builder()
+						.withRequestId("12345")
+						.withIntent(Intent.builder()
+								.withName("AMAZON.StopIntent")
+								.build())
+						.build())
+				.build();
+
+		Pattern expectedSpeechTextPattern = Pattern.compile("^OK, goodbye");
+
+		// When
+		SpeechletResponse speechletResponse = pontoonSpeechlet.onIntent(requestEnvelope);
+
+		// Then
+		assertThat(speechletResponse)
+				.isATellResponse()
+				.hasPlainTextOutputSpeech(expectedSpeechTextPattern);
 	}
 
 	private void startGame() {

@@ -16,34 +16,34 @@ import uk.co.claritysoftware.alexa.skills.pontoon.speech.PontoonGameActions;
 import uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.PontoonIntent;
 
 /**
- * Unit test class for {@link HelpIntentHandler}
+ * Unit test class for {@link StopIntentHandler}
  */
 @RunWith(MockitoJUnitRunner.class)
-public class HelpIntentHandlerTest {
+public class StopIntentHandlerTest {
 
 	@Mock
 	private PontoonGameActions pontoonGameActions;
 
 	@InjectMocks
-	private HelpIntentHandler intentHandler;
+	private StopIntentHandler intentHandler;
 
 	@Test
 	public void shouldHandleIntent() {
 		// Given
-		SpeechletRequestEnvelope<IntentRequest> requestEnvelope = speechletRequestEnvelopeWithIntentName("AMAZON.HelpIntent");
+		SpeechletRequestEnvelope<IntentRequest> requestEnvelope = speechletRequestEnvelopeWithIntentName("AMAZON.StopIntent");
 		Session session = requestEnvelope.getSession();
 
 		// When
 		intentHandler.handleIntent(requestEnvelope);
 
 		// Then
-		verify(pontoonGameActions).help(session);
+		verify(pontoonGameActions).stop(session);
 	}
 
 	@Test
-	public void shouldDetermineIfHandlesGivenHelpIntent() {
+	public void shouldDetermineIfHandlesGivenStopIntent() {
 		// Given
-		PontoonIntent intent = PontoonIntent.HELP_INTENT;
+		PontoonIntent intent = PontoonIntent.STOP_INTENT;
 
 		// When
 		boolean handles = intentHandler.handles(intent);
@@ -53,9 +53,9 @@ public class HelpIntentHandlerTest {
 	}
 
 	@Test
-	public void shouldDetermineIfHandlesGivenNonHelpIntent() {
+	public void shouldDetermineIfHandlesGivenNonStopIntent() {
 		// Given
-		PontoonIntent intent = PontoonIntent.TWIST_INTENT;
+		PontoonIntent intent = PontoonIntent.HELP_INTENT;
 
 		// When
 		boolean handles = intentHandler.handles(intent);

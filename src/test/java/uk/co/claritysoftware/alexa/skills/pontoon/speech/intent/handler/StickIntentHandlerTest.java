@@ -30,7 +30,7 @@ public class StickIntentHandlerTest {
 	@Test
 	public void shouldDoIntent() {
 		// Given
-		SpeechletRequestEnvelope<IntentRequest> requestEnvelope = speechletRequestEnvelopeWithIntentName("TwistIntent");
+		SpeechletRequestEnvelope<IntentRequest> requestEnvelope = speechletRequestEnvelopeWithIntentName("StickIntent");
 		Session session = requestEnvelope.getSession();
 
 		// When

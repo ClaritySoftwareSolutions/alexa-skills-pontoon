@@ -821,6 +821,79 @@ public class PontoonGameActionsTest {
 		assertThat(speechletResponse.getReprompt()).hasPlainTextOutputSpeech(expectedPlainTextReprompt);
 	}
 
+	@Test
+	public void shouldStop() throws Exception {
+		// Given
+		Session session = session();
+		Template template = mock(Template.class);
+		given(configuration.getTemplate("stop.ftl")).willReturn(template);
+
+		Map expectedParameters = new HashMap();
+		expectedParameters.put("gameAlreadyStarted", false);
+		expectedParameters.put("score", 0);
+		expectedParameters.put("handContainsAnAce", false);
+		expectedParameters.put("hand", "");
+		expectedParameters.put("aceIsHigh", false);
+
+		doAnswer((InvocationOnMock invocationOnMock) -> {
+			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			writer.append("The stop content");
+			return null;
+		}).when(template).process(eq(expectedParameters), any(Writer.class));
+
+		String expectedPlainTextOutputSpeech = "The stop content";
+
+		// When
+		SpeechletResponse speechletResponse = pontoonGameActions.stop(session);
+
+		// Then
+		assertThat(speechletResponse)
+				.isATellResponse()
+				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
+	}
+
+	@Test
+	public void shouldStopWithStickContentGivenSessionStarted() throws Exception {
+		// Given
+		Session session = session();
+		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(false);
+
+		CardDeck cardDeck = cardDeck(ACE_OF_CLUBS);
+		given(sessionSupport.getCardDeckFromSession(session)).willReturn(cardDeck);
+
+		Hand hand = hand(FIVE_OF_CLUBS, TEN_OF_HEARTS);
+		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
+
+		Map expectedParameters = new HashMap();
+		expectedParameters.put("gameAlreadyStarted", true);
+		expectedParameters.put("score", 15);
+		expectedParameters.put("handContainsAnAce", false);
+		expectedParameters.put("hand", "the Five of CLUBS, and the Ten of HEARTS");
+		expectedParameters.put("aceIsHigh", false);
+
+		Template template = mock(Template.class);
+		given(configuration.getTemplate("stick.ftl")).willReturn(template);
+
+		doAnswer((InvocationOnMock invocationOnMock) -> {
+			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			writer.append("The stick content");
+			return null;
+		}).when(template).process(eq(expectedParameters), any(Writer.class));
+
+		String expectedPlainTextOutputSpeech = "The stick content";
+
+		// When
+		SpeechletResponse speechletResponse = pontoonGameActions.stop(session);
+
+		// Then
+		assertThat(speechletResponse)
+				.isATellResponse()
+				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
+		verify(sessionSupport, never()).setAceIsHighOnSession(any(), anyBoolean());
+		verify(sessionSupport, never()).setHandOnSession(any(), any());
+		verify(sessionSupport, never()).setCardDeckOnSession(any(), any());
+	}
+
 	private Session session() {
 		Session session = mock(Session.class);
 		given(session.getSessionId()).willReturn("1234");

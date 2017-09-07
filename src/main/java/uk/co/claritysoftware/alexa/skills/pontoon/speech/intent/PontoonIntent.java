@@ -15,7 +15,9 @@ public enum PontoonIntent implements AlexaIntent {
 
 	STICK_INTENT("StickIntent"),
 
-	HELP_INTENT("AMAZON.HelpIntent");
+	HELP_INTENT("AMAZON.HelpIntent"),
+
+	STOP_INTENT("AMAZON.StopIntent");
 
 	private final String value;
 
