@@ -110,6 +110,22 @@ public class PontoonGameActions {
 	}
 
 	/**
+	 * Performs the stop action
+	 *
+	 * @param session the {@link Session} containing the {@link CardDeck}.
+	 * @return a {@link SpeechletResponse} containing the help
+	 */
+	public SpeechletResponse stop(final Session session) {
+		LOG.debug("stop for session id {}", session.getSessionId());
+
+		if (isGameAlreadyStarted(session)) {
+			return stick(session);
+		} else {
+			return stopSpeechletResponse();
+		}
+	}
+
+	/**
 	 * Determines if there is already a game in play by looking for the required attributes on the session
 	 *
 	 * @param session the {@link Session} containing the {@link CardDeck}, the current {@link Hand} and ace is high flag
@@ -268,6 +284,18 @@ public class PontoonGameActions {
 
 	private String helpContent(boolean gameAlreadyStarted) {
 		return freemarkerTemplateContent("help.ftl", gameAlreadyStarted, 0, "", false, false);
+	}
+
+	private SpeechletResponse stopSpeechletResponse() {
+		final PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+		speech.setText(stopContent());
+
+		LOG.debug("stop response {}", speech.getText());
+		return newTellResponse(speech);
+	}
+
+	private String stopContent() {
+		return freemarkerTemplateContent("stop.ftl", false, 0, "", false, false);
 	}
 
 	private String cardListSentence(final List<Card> cards) {
