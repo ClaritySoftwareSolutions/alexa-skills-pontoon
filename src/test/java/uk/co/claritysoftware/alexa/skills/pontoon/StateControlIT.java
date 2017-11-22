@@ -1,8 +1,9 @@
 package uk.co.claritysoftware.alexa.skills.pontoon;
 
+import static uk.co.claritysoftware.alexa.skills.kit.test.assertj.RepromptAssert.assertThat;
+import static uk.co.claritysoftware.alexa.skills.kit.test.assertj.SpeechletResponseAssert.assertThat;
 import static uk.co.claritysoftware.alexa.skills.testsupport.SpeechletRequestEnvelopeTestDataFactory.sessionStartedSpeechletRequestEnvelope;
 import static uk.co.claritysoftware.alexa.skills.testsupport.SpeechletRequestEnvelopeTestDataFactory.speechletRequestEnvelope;
-import static uk.co.claritysoftware.alexa.skills.testsupport.assertj.SpeechletResponseAssert.assertThat;
 
 import java.util.Arrays;
 import java.util.regex.Pattern;
@@ -24,7 +25,6 @@ import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardSuit;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardValue;
 import uk.co.claritysoftware.alexa.skills.pontoon.session.SessionSupport;
 import uk.co.claritysoftware.alexa.skills.pontoon.speech.PontoonSpeechlet;
-import uk.co.claritysoftware.alexa.skills.testsupport.assertj.RepromptAssert;
 
 /**
  * Integration test to assert flow and state control
@@ -70,9 +70,9 @@ public class StateControlIT {
 		// Then
 		assertThat(speechletResponse)
 				.isAnAskResponse()
-				.hasPlainTextOutputSpeech(expectedSpeechTextPattern);
-		RepromptAssert.assertThat(speechletResponse.getReprompt())
-				.hasPlainTextOutputSpeech(expectedReprompt);
+				.hasPlainTextOutputSpeechWithText(expectedSpeechTextPattern);
+		assertThat(speechletResponse.getReprompt())
+				.hasPlainTextOutputSpeechWithText(expectedReprompt);
 	}
 
 	@Test
@@ -100,9 +100,9 @@ public class StateControlIT {
 		// Then
 		assertThat(speechletResponse)
 				.isAnAskResponse()
-				.hasPlainTextOutputSpeech(expectedSpeechTextPattern);
-		RepromptAssert.assertThat(speechletResponse.getReprompt())
-				.hasPlainTextOutputSpeech(expectedReprompt);
+				.hasPlainTextOutputSpeechWithText(expectedSpeechTextPattern);
+		assertThat(speechletResponse.getReprompt())
+				.hasPlainTextOutputSpeechWithText(expectedReprompt);
 	}
 
 	@Test
@@ -127,9 +127,9 @@ public class StateControlIT {
 		// Then
 		assertThat(speechletResponse)
 				.isAnAskResponse()
-				.hasPlainTextOutputSpeech(expectedSpeechTextPattern);
-		RepromptAssert.assertThat(speechletResponse.getReprompt())
-				.hasPlainTextOutputSpeech(expectedReprompt);
+				.hasPlainTextOutputSpeechWithText(expectedSpeechTextPattern);
+		assertThat(speechletResponse.getReprompt())
+				.hasPlainTextOutputSpeechWithText(expectedReprompt);
 	}
 
 	@Test
@@ -155,7 +155,7 @@ public class StateControlIT {
 		// Then
 		assertThat(speechletResponse)
 				.isATellResponse()
-				.hasPlainTextOutputSpeech(expectedSpeechTextPattern);
+				.hasPlainTextOutputSpeechWithText(expectedSpeechTextPattern);
 	}
 
 	@Test
@@ -182,9 +182,9 @@ public class StateControlIT {
 		// Then
 		assertThat(speechletResponse)
 				.isAnAskResponse()
-				.hasPlainTextOutputSpeech(expectedSpeechTextPattern);
-		RepromptAssert.assertThat(speechletResponse.getReprompt())
-				.hasPlainTextOutputSpeech(expectedReprompt);
+				.hasPlainTextOutputSpeechWithText(expectedSpeechTextPattern);
+		assertThat(speechletResponse.getReprompt())
+				.hasPlainTextOutputSpeechWithText(expectedReprompt);
 	}
 
 	@Test
@@ -210,7 +210,7 @@ public class StateControlIT {
 		// Then
 		assertThat(speechletResponse)
 				.isATellResponse()
-				.hasPlainTextOutputSpeech(expectedSpeechTextPattern);
+				.hasPlainTextOutputSpeechWithText(expectedSpeechTextPattern);
 	}
 
 	@Test
@@ -234,7 +234,7 @@ public class StateControlIT {
 		// Then
 		assertThat(speechletResponse)
 				.isATellResponse()
-				.hasPlainTextOutputSpeech(expectedSpeechTextPattern);
+				.hasPlainTextOutputSpeechWithText(expectedSpeechTextPattern);
 	}
 
 	private void startGame() {

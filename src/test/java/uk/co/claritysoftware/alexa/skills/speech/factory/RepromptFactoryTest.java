@@ -1,6 +1,6 @@
 package uk.co.claritysoftware.alexa.skills.speech.factory;
 
-import static uk.co.claritysoftware.alexa.skills.testsupport.assertj.RepromptAssert.assertThat;
+import static uk.co.claritysoftware.alexa.skills.kit.test.assertj.RepromptAssert.assertThat;
 
 import org.junit.Test;
 import com.amazon.speech.ui.Reprompt;
@@ -19,7 +19,7 @@ public class RepromptFactoryTest {
 		Reprompt reprompt = RepromptFactory.reprompt(repromptText);
 
 		// Then
-		assertThat(reprompt).hasPlainTextOutputSpeech(repromptText);
+		assertThat(reprompt).hasPlainTextOutputSpeechWithText(repromptText);
 	}
 
 	@Test
@@ -31,6 +31,6 @@ public class RepromptFactoryTest {
 		Reprompt reprompt = RepromptFactory.whatNextReprompt();
 
 		// Then
-		assertThat(reprompt).hasPlainTextOutputSpeech(expectedRepromptText);
+		assertThat(reprompt).hasPlainTextOutputSpeechWithText(expectedRepromptText);
 	}
 }

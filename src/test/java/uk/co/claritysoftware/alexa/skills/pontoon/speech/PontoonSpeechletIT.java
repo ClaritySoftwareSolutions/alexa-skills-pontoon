@@ -1,9 +1,9 @@
 package uk.co.claritysoftware.alexa.skills.pontoon.speech;
 
+import static uk.co.claritysoftware.alexa.skills.kit.test.assertj.SpeechletResponseAssert.assertThat;
+import static uk.co.claritysoftware.alexa.skills.kit.test.assertj.RepromptAssert.assertThat;
 import static uk.co.claritysoftware.alexa.skills.testsupport.SpeechletRequestEnvelopeTestDataFactory.launchSpeechletRequestEnvelopeWithSession;
 import static uk.co.claritysoftware.alexa.skills.testsupport.SpeechletRequestEnvelopeTestDataFactory.sessionStartedSpeechletRequestEnvelope;
-import static uk.co.claritysoftware.alexa.skills.testsupport.assertj.RepromptAssert.assertThat;
-import static uk.co.claritysoftware.alexa.skills.testsupport.assertj.SpeechletResponseAssert.assertThat;
 
 import java.util.regex.Pattern;
 import org.junit.Before;
@@ -52,9 +52,9 @@ public class PontoonSpeechletIT {
 		// Then
 		assertThat(speechletResponse)
 				.isAnAskResponse()
-				.hasPlainTextOutputSpeech(expectedSpeechTextPattern);
+				.hasPlainTextOutputSpeechWithText(expectedSpeechTextPattern);
 		assertThat(speechletResponse.getReprompt())
-				.hasPlainTextOutputSpeech(expectedReprompt);
+				.hasPlainTextOutputSpeechWithText(expectedReprompt);
 	}
 
 }

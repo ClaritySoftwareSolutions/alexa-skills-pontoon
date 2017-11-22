@@ -6,7 +6,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static uk.co.claritysoftware.alexa.skills.testsupport.SpeechletRequestEnvelopeTestDataFactory.speechletRequestEnvelopeWithIntentName;
-import static uk.co.claritysoftware.alexa.skills.testsupport.assertj.SpeechletResponseAssert.assertThat;
+import static uk.co.claritysoftware.alexa.skills.kit.test.assertj.SpeechletResponseAssert.assertThat;
 
 import org.junit.Test;
 import com.amazon.speech.json.SpeechletRequestEnvelope;
@@ -44,7 +44,7 @@ public class MidGameIntentHandlerTest {
 		// Then
 		assertThat(speechletResponse)
 				.isATellResponse()
-				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
+				.hasPlainTextOutputSpeechWithText(expectedPlainTextOutputSpeech);
 	}
 
 	@Test
