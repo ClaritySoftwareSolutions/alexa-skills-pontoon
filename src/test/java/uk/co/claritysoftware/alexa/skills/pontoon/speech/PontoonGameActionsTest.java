@@ -10,8 +10,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.util.reflection.Whitebox.setInternalState;
-import static uk.co.claritysoftware.alexa.skills.testsupport.assertj.RepromptAssert.assertThat;
-import static uk.co.claritysoftware.alexa.skills.testsupport.assertj.SpeechletResponseAssert.assertThat;
+import static uk.co.claritysoftware.alexa.skills.kit.test.assertj.RepromptAssert.assertThat;
+import static uk.co.claritysoftware.alexa.skills.kit.test.assertj.SpeechletResponseAssert.assertThat;
 
 import java.io.Writer;
 import java.util.ArrayList;
@@ -104,8 +104,8 @@ public class PontoonGameActionsTest {
 		// Then
 		assertThat(speechletResponse)
 				.isAnAskResponse()
-				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
-		assertThat(speechletResponse.getReprompt()).hasPlainTextOutputSpeech(expectedPlainTextReprompt);
+				.hasPlainTextOutputSpeechWithText(expectedPlainTextOutputSpeech);
+		assertThat(speechletResponse.getReprompt()).hasPlainTextOutputSpeechWithText(expectedPlainTextReprompt);
 		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
 		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
@@ -147,8 +147,8 @@ public class PontoonGameActionsTest {
 		// Then
 		assertThat(speechletResponse)
 				.isAnAskResponse()
-				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
-		assertThat(speechletResponse.getReprompt()).hasPlainTextOutputSpeech(expectedPlainTextReprompt);
+				.hasPlainTextOutputSpeechWithText(expectedPlainTextOutputSpeech);
+		assertThat(speechletResponse.getReprompt()).hasPlainTextOutputSpeechWithText(expectedPlainTextReprompt);
 		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
 		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
@@ -189,7 +189,7 @@ public class PontoonGameActionsTest {
 		// Then
 		assertThat(speechletResponse)
 				.isATellResponse()
-				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
+				.hasPlainTextOutputSpeechWithText(expectedPlainTextOutputSpeech);
 		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
 		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
@@ -230,7 +230,7 @@ public class PontoonGameActionsTest {
 		// Then
 		assertThat(speechletResponse)
 				.isATellResponse()
-				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
+				.hasPlainTextOutputSpeechWithText(expectedPlainTextOutputSpeech);
 		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
 		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
@@ -275,8 +275,8 @@ public class PontoonGameActionsTest {
 		// Then
 		assertThat(speechletResponse)
 				.isAnAskResponse()
-				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
-		assertThat(speechletResponse.getReprompt()).hasPlainTextOutputSpeech(expectedPlainTextReprompt);
+				.hasPlainTextOutputSpeechWithText(expectedPlainTextOutputSpeech);
+		assertThat(speechletResponse.getReprompt()).hasPlainTextOutputSpeechWithText(expectedPlainTextReprompt);
 		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
 		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
@@ -321,8 +321,8 @@ public class PontoonGameActionsTest {
 		// Then
 		assertThat(speechletResponse)
 				.isAnAskResponse()
-				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
-		assertThat(speechletResponse.getReprompt()).hasPlainTextOutputSpeech(expectedPlainTextReprompt);
+				.hasPlainTextOutputSpeechWithText(expectedPlainTextOutputSpeech);
+		assertThat(speechletResponse.getReprompt()).hasPlainTextOutputSpeechWithText(expectedPlainTextReprompt);
 		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
 		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
@@ -367,8 +367,8 @@ public class PontoonGameActionsTest {
 		// Then
 		assertThat(speechletResponse)
 				.isAnAskResponse()
-				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
-		assertThat(speechletResponse.getReprompt()).hasPlainTextOutputSpeech(expectedPlainTextReprompt);
+				.hasPlainTextOutputSpeechWithText(expectedPlainTextOutputSpeech);
+		assertThat(speechletResponse.getReprompt()).hasPlainTextOutputSpeechWithText(expectedPlainTextReprompt);
 		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
 		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
@@ -412,7 +412,7 @@ public class PontoonGameActionsTest {
 		// Then
 		assertThat(speechletResponse)
 				.isATellResponse()
-				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
+				.hasPlainTextOutputSpeechWithText(expectedPlainTextOutputSpeech);
 		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
 		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
@@ -456,7 +456,7 @@ public class PontoonGameActionsTest {
 		// Then
 		assertThat(speechletResponse)
 				.isATellResponse()
-				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
+				.hasPlainTextOutputSpeechWithText(expectedPlainTextOutputSpeech);
 		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
 		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
@@ -500,7 +500,7 @@ public class PontoonGameActionsTest {
 		// Then
 		assertThat(speechletResponse)
 				.isATellResponse()
-				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
+				.hasPlainTextOutputSpeechWithText(expectedPlainTextOutputSpeech);
 		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
 		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
@@ -544,7 +544,7 @@ public class PontoonGameActionsTest {
 		// Then
 		assertThat(speechletResponse)
 				.isATellResponse()
-				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
+				.hasPlainTextOutputSpeechWithText(expectedPlainTextOutputSpeech);
 		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
 		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
@@ -588,7 +588,7 @@ public class PontoonGameActionsTest {
 		// Then
 		assertThat(speechletResponse)
 				.isATellResponse()
-				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
+				.hasPlainTextOutputSpeechWithText(expectedPlainTextOutputSpeech);
 		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
 		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
@@ -632,7 +632,7 @@ public class PontoonGameActionsTest {
 		// Then
 		assertThat(speechletResponse)
 				.isATellResponse()
-				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
+				.hasPlainTextOutputSpeechWithText(expectedPlainTextOutputSpeech);
 		verify(sessionSupport).setCardDeckOnSession(session, expectedCardDeckOnSession);
 		verify(sessionSupport).setHandOnSession(session, expectedHandOnSession);
 	}
@@ -670,7 +670,7 @@ public class PontoonGameActionsTest {
 		// Then
 		assertThat(speechletResponse)
 				.isATellResponse()
-				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
+				.hasPlainTextOutputSpeechWithText(expectedPlainTextOutputSpeech);
 		verify(sessionSupport, never()).setAceIsHighOnSession(any(), anyBoolean());
 		verify(sessionSupport, never()).setHandOnSession(any(), any());
 		verify(sessionSupport, never()).setCardDeckOnSession(any(), any());
@@ -709,7 +709,7 @@ public class PontoonGameActionsTest {
 		// Then
 		assertThat(speechletResponse)
 				.isATellResponse()
-				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
+				.hasPlainTextOutputSpeechWithText(expectedPlainTextOutputSpeech);
 		verify(sessionSupport, never()).setAceIsHighOnSession(any(), anyBoolean());
 		verify(sessionSupport, never()).setHandOnSession(any(), any());
 		verify(sessionSupport, never()).setCardDeckOnSession(any(), any());
@@ -748,7 +748,7 @@ public class PontoonGameActionsTest {
 		// Then
 		assertThat(speechletResponse)
 				.isATellResponse()
-				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
+				.hasPlainTextOutputSpeechWithText(expectedPlainTextOutputSpeech);
 		verify(sessionSupport, never()).setAceIsHighOnSession(any(), anyBoolean());
 		verify(sessionSupport, never()).setHandOnSession(any(), any());
 		verify(sessionSupport, never()).setCardDeckOnSession(any(), any());
@@ -817,8 +817,8 @@ public class PontoonGameActionsTest {
 		// Then
 		assertThat(speechletResponse)
 				.isAnAskResponse()
-				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
-		assertThat(speechletResponse.getReprompt()).hasPlainTextOutputSpeech(expectedPlainTextReprompt);
+				.hasPlainTextOutputSpeechWithText(expectedPlainTextOutputSpeech);
+		assertThat(speechletResponse.getReprompt()).hasPlainTextOutputSpeechWithText(expectedPlainTextReprompt);
 	}
 
 	@Test
@@ -849,7 +849,7 @@ public class PontoonGameActionsTest {
 		// Then
 		assertThat(speechletResponse)
 				.isATellResponse()
-				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
+				.hasPlainTextOutputSpeechWithText(expectedPlainTextOutputSpeech);
 	}
 
 	@Test
@@ -888,7 +888,7 @@ public class PontoonGameActionsTest {
 		// Then
 		assertThat(speechletResponse)
 				.isATellResponse()
-				.hasPlainTextOutputSpeech(expectedPlainTextOutputSpeech);
+				.hasPlainTextOutputSpeechWithText(expectedPlainTextOutputSpeech);
 		verify(sessionSupport, never()).setAceIsHighOnSession(any(), anyBoolean());
 		verify(sessionSupport, never()).setHandOnSession(any(), any());
 		verify(sessionSupport, never()).setCardDeckOnSession(any(), any());

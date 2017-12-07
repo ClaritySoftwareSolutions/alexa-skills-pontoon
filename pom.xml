@@ -4,7 +4,7 @@
 	<groupId>uk.co.claritysoftware</groupId>
 	<artifactId>alexa-skills-pontoon</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 
 	<name>Alexa Pontoon Game Skill</name>
 	<description>Alexa Skill written in Java to play the card game Pontoon</description>
@@ -25,6 +25,7 @@
 		<mockito.version>1.10.19</mockito.version>
 		<system-rules.version>1.16.0</system-rules.version>
 		<equalsverifier.version>2.3.1</equalsverifier.version>
+		<alexa-skills-kit-test.version>1.0.0</alexa-skills-kit-test.version>
 		<maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
 		<maven-failsafe-plugin.version>2.20</maven-failsafe-plugin.version>
 		<maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
@@ -123,6 +124,13 @@
 			<groupId>org.jooq</groupId>
 			<artifactId>joox</artifactId>
 			<version>1.5.0</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>uk.co.claritysoftware</groupId>
+			<artifactId>alexa-skills-kit-test</artifactId>
+			<version>${alexa-skills-kit-test.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
