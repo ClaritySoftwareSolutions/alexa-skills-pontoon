@@ -3,22 +3,19 @@ package uk.co.claritysoftware.alexa.skills.pontoon.speech;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import uk.co.claritysoftware.alexa.skills.pontoon.dagger.DaggerPontoonComponent;
+import uk.co.claritysoftware.alexa.skills.pontoon.dagger.PontoonComponent;
 import uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.PontoonIntent;
 import uk.co.claritysoftware.alexa.skills.speech.intent.IntentHandler;
 
 /**
  * Integration test class for {@link HandlerFactory}
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("/application-context.xml")
 public class HandlerFactoryIT {
 
-	@Autowired
-	private HandlerFactory handlerFactory;
+	private final PontoonComponent pontoonComponent = DaggerPontoonComponent.create();
+
+	private final HandlerFactory handlerFactory = pontoonComponent.buildHandlerFactory();
 
 	@Test
 	public void shouldGetLaunchHandler() {

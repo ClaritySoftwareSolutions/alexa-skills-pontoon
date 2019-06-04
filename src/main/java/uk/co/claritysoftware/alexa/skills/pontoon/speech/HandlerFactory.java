@@ -1,22 +1,20 @@
 package uk.co.claritysoftware.alexa.skills.pontoon.speech;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import javax.inject.Inject;
 import uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.PontoonIntent;
 import uk.co.claritysoftware.alexa.skills.speech.intent.IntentHandler;
 
 /**
  * Simple class to return registered Handlers
  */
-@Component
 public class HandlerFactory {
 
 	private final LaunchHandler launchHandler;
 
 	private final List<IntentHandler> intentHandlers;
 
-	@Autowired
+	@Inject
 	public HandlerFactory(final LaunchHandler launchHandler, final List<IntentHandler> intentHandlers) {
 		this.launchHandler = launchHandler;
 		this.intentHandlers = intentHandlers;
