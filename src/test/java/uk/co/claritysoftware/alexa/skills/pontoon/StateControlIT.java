@@ -9,16 +9,14 @@ import java.util.Arrays;
 import java.util.regex.Pattern;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.amazon.speech.json.SpeechletRequestEnvelope;
 import com.amazon.speech.slu.Intent;
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SessionStartedRequest;
 import com.amazon.speech.speechlet.SpeechletResponse;
+import uk.co.claritysoftware.alexa.skills.pontoon.dagger.DaggerPontoonComponent;
+import uk.co.claritysoftware.alexa.skills.pontoon.dagger.PontoonComponent;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.Hand;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.Card;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardSuit;
@@ -29,15 +27,13 @@ import uk.co.claritysoftware.alexa.skills.pontoon.speech.PontoonSpeechlet;
 /**
  * Integration test to assert flow and state control
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("/application-context.xml")
 public class StateControlIT {
 
-	@Autowired
-	private PontoonSpeechlet pontoonSpeechlet;
+	private final PontoonComponent pontoonComponent = DaggerPontoonComponent.create();
 
-	@Autowired
-	private SessionSupport sessionSupport;
+	private final PontoonSpeechlet pontoonSpeechlet = pontoonComponent.buildPontoonSpeechlet();
+
+	private final SessionSupport sessionSupport = pontoonComponent.buildSessionSupport();
 
 	private Session session;
 
@@ -79,7 +75,7 @@ public class StateControlIT {
 	public void shouldGetTwistResponseGivenTwistIntentAndGameStarted() {
 		// Given
 		startGame();
-		ensureHandCannotWinAfterTwist(); // This enssure we always get a hand in play response, rather than a win or bust
+		ensureHandCannotWinAfterTwist(); // This ensurea we always get a hand in play response, rather than a win or bust
 
 		SpeechletRequestEnvelope<IntentRequest> requestEnvelope = speechletRequestEnvelope()
 				.withSession(session)

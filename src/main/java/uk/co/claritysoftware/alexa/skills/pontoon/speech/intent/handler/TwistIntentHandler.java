@@ -1,9 +1,8 @@
 package uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.handler;
 
+import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import com.amazon.speech.json.SpeechletRequestEnvelope;
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
@@ -16,14 +15,13 @@ import uk.co.claritysoftware.alexa.skills.speech.intent.IntentHandler;
 /**
  * {@link IntentHandler} for the Twist intent
  */
-@Component
 public class TwistIntentHandler extends MidGameIntentHandler {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TwistIntentHandler.class);
 
 	private static final PontoonIntent HANDLED_INTENT = PontoonIntent.TWIST_INTENT;
 
-	@Autowired
+	@Inject
 	public TwistIntentHandler(final PontoonGameActions pontoonGameActions) {
 		super(pontoonGameActions);
 	}

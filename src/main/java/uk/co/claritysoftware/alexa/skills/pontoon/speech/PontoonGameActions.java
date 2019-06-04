@@ -14,10 +14,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
@@ -33,7 +32,6 @@ import freemarker.template.TemplateException;
 /**
  * Class to perform the actions of a game of pontoon
  */
-@Service
 public class PontoonGameActions {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PontoonGameActions.class);
@@ -42,7 +40,7 @@ public class PontoonGameActions {
 
 	private final Configuration configuration;
 
-	@Autowired
+	@Inject
 	public PontoonGameActions(final SessionSupport sessionSupport, final Configuration configuration) {
 		this.sessionSupport = sessionSupport;
 		this.configuration = configuration;
@@ -304,7 +302,7 @@ public class PontoonGameActions {
 				.collect(Collectors.toList())
 				.iterator();
 
-		StringBuffer sentence = new StringBuffer();
+		StringBuilder sentence = new StringBuilder();
 		while (cardsText.hasNext()) {
 			String cardText = cardsText.next();
 

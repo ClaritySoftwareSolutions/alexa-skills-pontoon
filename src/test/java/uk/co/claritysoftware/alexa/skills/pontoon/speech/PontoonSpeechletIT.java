@@ -1,32 +1,29 @@
 package uk.co.claritysoftware.alexa.skills.pontoon.speech;
 
-import static uk.co.claritysoftware.alexa.skills.kit.test.assertj.SpeechletResponseAssert.assertThat;
 import static uk.co.claritysoftware.alexa.skills.kit.test.assertj.RepromptAssert.assertThat;
+import static uk.co.claritysoftware.alexa.skills.kit.test.assertj.SpeechletResponseAssert.assertThat;
 import static uk.co.claritysoftware.alexa.skills.testsupport.SpeechletRequestEnvelopeTestDataFactory.launchSpeechletRequestEnvelopeWithSession;
 import static uk.co.claritysoftware.alexa.skills.testsupport.SpeechletRequestEnvelopeTestDataFactory.sessionStartedSpeechletRequestEnvelope;
 
 import java.util.regex.Pattern;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.amazon.speech.json.SpeechletRequestEnvelope;
 import com.amazon.speech.speechlet.LaunchRequest;
 import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SessionStartedRequest;
 import com.amazon.speech.speechlet.SpeechletResponse;
+import uk.co.claritysoftware.alexa.skills.pontoon.dagger.DaggerPontoonComponent;
+import uk.co.claritysoftware.alexa.skills.pontoon.dagger.PontoonComponent;
 
 /**
  * Integration test class for {@link PontoonSpeechlet}
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("/application-context.xml")
 public class PontoonSpeechletIT {
 
-	@Autowired
-	private PontoonSpeechlet pontoonSpeechlet;
+	private final PontoonComponent pontoonComponent = DaggerPontoonComponent.create();
+
+	private final PontoonSpeechlet pontoonSpeechlet = pontoonComponent.buildPontoonSpeechlet();
 
 	private Session session;
 

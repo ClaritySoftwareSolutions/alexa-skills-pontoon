@@ -1,9 +1,8 @@
 package uk.co.claritysoftware.alexa.skills.pontoon.speech;
 
+import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import com.amazon.speech.json.SpeechletRequestEnvelope;
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.LaunchRequest;
@@ -21,7 +20,6 @@ import uk.co.claritysoftware.alexa.skills.speech.AbstractSpeechlet;
 /**
  * Pontoon implementation of {@link SpeechletV2}
  */
-@Component
 public class PontoonSpeechlet extends AbstractSpeechlet {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PontoonSpeechlet.class);
@@ -30,7 +28,7 @@ public class PontoonSpeechlet extends AbstractSpeechlet {
 
 	private final HandlerFactory handlerFactory;
 
-	@Autowired
+	@Inject
 	public PontoonSpeechlet(final SessionSupport sessionSupport, final HandlerFactory handlerFactory) {
 		this.sessionSupport = sessionSupport;
 		this.handlerFactory = handlerFactory;

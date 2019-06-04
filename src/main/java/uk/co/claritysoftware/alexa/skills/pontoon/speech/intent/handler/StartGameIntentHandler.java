@@ -1,9 +1,8 @@
 package uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.handler;
 
+import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import com.amazon.speech.json.SpeechletRequestEnvelope;
 import com.amazon.speech.slu.Slot;
 import com.amazon.speech.speechlet.IntentRequest;
@@ -19,7 +18,6 @@ import uk.co.claritysoftware.alexa.skills.speech.intent.IntentHandler;
 /**
  * {@link IntentHandler} for the Start Game intent
  */
-@Component
 public class StartGameIntentHandler implements IntentHandler {
 
 	private static final Logger LOG = LoggerFactory.getLogger(StartGameIntentHandler.class);
@@ -32,7 +30,7 @@ public class StartGameIntentHandler implements IntentHandler {
 
 	private final SessionSupport sessionSupport;
 
-	@Autowired
+	@Inject
 	public StartGameIntentHandler(final PontoonGameActions pontoonGameActions, final SessionSupport sessionSupport) {
 		this.pontoonGameActions = pontoonGameActions;
 		this.sessionSupport = sessionSupport;
