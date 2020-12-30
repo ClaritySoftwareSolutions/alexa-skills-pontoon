@@ -3,7 +3,7 @@ package uk.co.claritysoftware.alexa.skills.pontoon.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.Card;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardSuit;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardValue;

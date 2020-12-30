@@ -1,17 +1,12 @@
 package uk.co.claritysoftware.alexa.skills.pontoon.domain.cards;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.Card;
-import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardDeck;
-import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardSuit;
-import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardValue;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
@@ -99,15 +94,12 @@ public class CardDeckTest {
 		}
 
 		// When
-		try {
-			cardDeck.deal();
+		Throwable e = catchThrowable(() -> cardDeck.deal());
 
-			fail("Was expecting an IllegalStateExceptiom");
-		}
 		// Then
-		catch (IllegalStateException e) {
-			assertThat(e.getMessage()).isEqualTo("All cards have already been dealt from the deck");
-		}
+		assertThat(e)
+				.isInstanceOf(IllegalStateException.class)
+				.hasMessage("All cards have already been dealt from the deck");
 	}
 
 	@Test
@@ -138,14 +130,10 @@ public class CardDeckTest {
 		List<Card> cards = cardDeck.getCards();
 
 		// When
-		try {
-			cards.remove(0);
+		Throwable e = catchThrowable(() -> cards.remove(0));
 
-			fail("Was expecting an UnsupportedOperationException");
-		}
 		// Then
-		catch (Exception e) {
-			assertThat(e.getClass()).isEqualTo(UnsupportedOperationException.class);
-		}
+		assertThat(e)
+				.isInstanceOf(UnsupportedOperationException.class);
 	}
 }

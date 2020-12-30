@@ -6,7 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import java.util.Collections;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import com.amazon.speech.speechlet.Session;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.Hand;

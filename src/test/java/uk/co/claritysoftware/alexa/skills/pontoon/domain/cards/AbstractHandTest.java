@@ -1,12 +1,12 @@
 package uk.co.claritysoftware.alexa.skills.pontoon.domain.cards;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.Hand;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
@@ -19,7 +19,7 @@ public class AbstractHandTest {
 	@Test
 	public void shouldAddCard() {
 		// Given
-		AbstractHand hand = new TestHand(new ArrayList());
+		AbstractHand hand = new TestHand(new ArrayList<>());
 		Card card = new Card(CardValue.KING, CardSuit.CLUBS);
 
 		List<Card> expectedCardsInHand = Collections.singletonList(card);
@@ -38,15 +38,11 @@ public class AbstractHandTest {
 		List<Card> cards = hand.getCards();
 
 		// When
-		try {
-			cards.remove(0);
+		Throwable e = catchThrowable(() -> cards.remove(0));
 
-			fail("Was expecting an UnsupportedOperationException");
-		}
 		// Then
-		catch (Exception e) {
-			assertThat(e.getClass()).isEqualTo(UnsupportedOperationException.class);
-		}
+		assertThat(e)
+				.isInstanceOf(UnsupportedOperationException.class);
 	}
 
 	@Test

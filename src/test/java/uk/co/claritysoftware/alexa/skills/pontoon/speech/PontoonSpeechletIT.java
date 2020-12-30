@@ -6,8 +6,8 @@ import static uk.co.claritysoftware.alexa.skills.testsupport.SpeechletRequestEnv
 import static uk.co.claritysoftware.alexa.skills.testsupport.SpeechletRequestEnvelopeTestDataFactory.sessionStartedSpeechletRequestEnvelope;
 
 import java.util.regex.Pattern;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import com.amazon.speech.json.SpeechletRequestEnvelope;
 import com.amazon.speech.speechlet.LaunchRequest;
 import com.amazon.speech.speechlet.Session;
@@ -27,7 +27,7 @@ public class PontoonSpeechletIT {
 
 	private Session session;
 
-	@Before
+	@BeforeEach
 	public void sessionSetup() {
 		SpeechletRequestEnvelope<SessionStartedRequest> requestEnvelope = sessionStartedSpeechletRequestEnvelope();
 		pontoonSpeechlet.onSessionStarted(requestEnvelope);

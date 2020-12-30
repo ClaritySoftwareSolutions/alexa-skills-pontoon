@@ -2,7 +2,7 @@ package uk.co.claritysoftware.alexa.skills.pontoon.speech;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.co.claritysoftware.alexa.skills.pontoon.dagger.DaggerPontoonComponent;
 import uk.co.claritysoftware.alexa.skills.pontoon.dagger.PontoonComponent;
 import uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.PontoonIntent;

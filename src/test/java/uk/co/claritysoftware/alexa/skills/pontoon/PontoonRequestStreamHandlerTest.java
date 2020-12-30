@@ -1,15 +1,14 @@
 package uk.co.claritysoftware.alexa.skills.pontoon;
 
+import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static uk.co.claritysoftware.alexa.skills.kit.test.assertj.SpeechletRequestStreamHandlerAssert.assertThat;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.contrib.java.lang.system.EnvironmentVariables;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit test class for {@link PontoonRequestStreamHandler}
@@ -18,49 +17,47 @@ public class PontoonRequestStreamHandlerTest {
 
 	private static final String APPLICATION_IDS = "com_amazon_speech_speechlet_servlet_supportedApplicationIds";
 
-	@Rule
-	public final EnvironmentVariables environmentVariables = new EnvironmentVariables();
-
 	@Test
-	public void shouldConstructGivenSingleApplicationId() {
-		// Given
-		environmentVariables.set(APPLICATION_IDS, "1234");
+	public void shouldConstructGivenSingleApplicationId() throws Exception {
+		withEnvironmentVariable(APPLICATION_IDS, "1234").execute(() -> {
+			// Given
 
-		Set<String> expectedApplicationIds = Stream.of("1234").collect(Collectors.toSet());
+			Set<String> expectedApplicationIds = Stream.of("1234").collect(Collectors.toSet());
 
-		// When
-		PontoonRequestStreamHandler handler = new PontoonRequestStreamHandler();
+			// When
+			PontoonRequestStreamHandler handler = new PontoonRequestStreamHandler();
 
-		// Then
-		assertThat(handler).hasApplicationIds(expectedApplicationIds);
+			// Then
+			assertThat(handler).hasApplicationIds(expectedApplicationIds);
+		});
 	}
 
 	@Test
-	public void shouldConstructGivenMultipleApplicationIds() {
-		// Given
-		environmentVariables.set(APPLICATION_IDS, "1234,5678");
+	public void shouldConstructGivenMultipleApplicationIds() throws Exception {
+		withEnvironmentVariable(APPLICATION_IDS, "1234,5678").execute(() -> {
+			// Given
+			Set<String> expectedApplicationIds = Stream.of("1234", "5678").collect(Collectors.toSet());
 
-		Set<String> expectedApplicationIds = Stream.of("1234", "5678").collect(Collectors.toSet());
+			// When
+			PontoonRequestStreamHandler handler = new PontoonRequestStreamHandler();
 
-		// When
-		PontoonRequestStreamHandler handler = new PontoonRequestStreamHandler();
-
-		// Then
-		assertThat(handler).hasApplicationIds(expectedApplicationIds);
+			// Then
+			assertThat(handler).hasApplicationIds(expectedApplicationIds);
+		});
 	}
 
 	@Test
-	public void shouldConstructGivenMultipleApplicationIdsWithSpaces() {
-		// Given
-		environmentVariables.set(APPLICATION_IDS, "1234, 5678, ,9012");
+	public void shouldConstructGivenMultipleApplicationIdsWithSpaces() throws Exception {
+		withEnvironmentVariable(APPLICATION_IDS, "1234, 5678, ,9012").execute(() -> {
+			// Given
+			Set<String> expectedApplicationIds = Stream.of("1234", "5678", "9012").collect(Collectors.toSet());
 
-		Set<String> expectedApplicationIds = Stream.of("1234", "5678", "9012").collect(Collectors.toSet());
+			// When
+			PontoonRequestStreamHandler handler = new PontoonRequestStreamHandler();
 
-		// When
-		PontoonRequestStreamHandler handler = new PontoonRequestStreamHandler();
-
-		// Then
-		assertThat(handler).hasApplicationIds(expectedApplicationIds);
+			// Then
+			assertThat(handler).hasApplicationIds(expectedApplicationIds);
+		});
 	}
 
 	@Test
@@ -68,52 +65,41 @@ public class PontoonRequestStreamHandlerTest {
 		// Given
 
 		// When
-		try {
-			new PontoonRequestStreamHandler();
+		Throwable e = catchThrowable(() -> new PontoonRequestStreamHandler());
 
-			fail("Was expecting an IllegalStateException");
-
-		}
 		// Then
-		catch (IllegalStateException e) {
-			assertThat(e.getMessage()).isEqualTo("Cannot instantiate PontoonRequestStreamHandler with null or empty com_amazon_speech_speechlet_servlet_supportedApplicationIds system property");
-		}
+		assertThat(e)
+				.isInstanceOf(IllegalStateException.class)
+				.hasMessage("Cannot instantiate PontoonRequestStreamHandler with null or empty com_amazon_speech_speechlet_servlet_supportedApplicationIds system property");
 	}
 
 	@Test
-	public void shouldFailToConstructGivenEmptyAPPLICATION_IDS() {
-		// Given
-		environmentVariables.set(APPLICATION_IDS, "");
+	public void shouldFailToConstructGivenEmptyAPPLICATION_IDS() throws Exception {
+		withEnvironmentVariable(APPLICATION_IDS, "").execute(() -> {
+			// Given
 
-		// When
-		try {
-			new PontoonRequestStreamHandler();
+			// When
+			Throwable e = catchThrowable(() -> new PontoonRequestStreamHandler());
 
-			fail("Was expecting an IllegalStateException");
-
-		}
-		// Then
-		catch (IllegalStateException e) {
-			assertThat(e.getMessage()).isEqualTo("Cannot instantiate PontoonRequestStreamHandler with null or empty com_amazon_speech_speechlet_servlet_supportedApplicationIds system property");
-		}
+			// Then
+			assertThat(e)
+					.isInstanceOf(IllegalStateException.class)
+					.hasMessage("Cannot instantiate PontoonRequestStreamHandler with null or empty com_amazon_speech_speechlet_servlet_supportedApplicationIds system property");
+		});
 	}
 
 	@Test
-	public void shouldFailToConstructGivenCollectionOfEmptyAPPLICATION_IDS() {
-		// Given
-		environmentVariables.set(APPLICATION_IDS, ",, , ");
+	public void shouldFailToConstructGivenCollectionOfEmptyAPPLICATION_IDS() throws Exception {
+		withEnvironmentVariable(APPLICATION_IDS, ",, , ").execute(() -> {
+			// Given
 
-		// When
-		try {
-			new PontoonRequestStreamHandler();
+			// When
+			Throwable e = catchThrowable(() -> new PontoonRequestStreamHandler());
 
-			fail("Was expecting an IllegalStateException");
-
-		}
-		// Then
-		catch (IllegalStateException e) {
-			assertThat(e.getMessage()).isEqualTo("Cannot instantiate PontoonRequestStreamHandler with null or empty com_amazon_speech_speechlet_servlet_supportedApplicationIds system property");
-		}
+			// Then
+			assertThat(e)
+					.isInstanceOf(IllegalStateException.class)
+					.hasMessage("Cannot instantiate PontoonRequestStreamHandler with null or empty com_amazon_speech_speechlet_servlet_supportedApplicationIds system property");
+		});
 	}
-
 }

@@ -2,7 +2,7 @@ package uk.co.claritysoftware.alexa.skills.speech.factory;
 
 import static uk.co.claritysoftware.alexa.skills.kit.test.assertj.RepromptAssert.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import com.amazon.speech.ui.Reprompt;
 
 /**

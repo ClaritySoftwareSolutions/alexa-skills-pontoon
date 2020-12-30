@@ -2,28 +2,28 @@ package uk.co.claritysoftware.alexa.skills.pontoon.speech;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.internal.util.reflection.Whitebox.setInternalState;
 import static uk.co.claritysoftware.alexa.skills.kit.test.assertj.RepromptAssert.assertThat;
 import static uk.co.claritysoftware.alexa.skills.kit.test.assertj.SpeechletResponseAssert.assertThat;
 
 import java.io.Writer;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.Hand;
@@ -39,7 +39,7 @@ import freemarker.template.Template;
 /**
  * Unit test class for {@link PontoonGameActions}
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PontoonGameActionsTest {
 
 	private static final Card FIVE_OF_CLUBS = new Card(CardValue.FIVE, CardSuit.CLUBS);
@@ -76,7 +76,7 @@ public class PontoonGameActionsTest {
 		CardDeck cardDeck = cardDeck(FIVE_OF_CLUBS, QUEEN_OF_HEARTS);
 		given(sessionSupport.getCardDeckFromSession(session)).willReturn(cardDeck);
 
-		Map expectedParameters = new HashMap();
+		Map<String, Object> expectedParameters = new HashMap<>();
 		expectedParameters.put("gameAlreadyStarted", true);
 		expectedParameters.put("score", 15);
 		expectedParameters.put("handContainsAnAce", false);
@@ -87,7 +87,7 @@ public class PontoonGameActionsTest {
 		given(configuration.getTemplate("initialHandStillInPlay.ftl")).willReturn(template);
 
 		doAnswer((InvocationOnMock invocationOnMock) -> {
-			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			Writer writer = invocationOnMock.getArgument(1, Writer.class);
 			writer.append("The initial deal content");
 			return null;
 		}).when(template).process(eq(expectedParameters), any(Writer.class));
@@ -119,7 +119,7 @@ public class PontoonGameActionsTest {
 		CardDeck cardDeck = cardDeck(ACE_OF_CLUBS, QUEEN_OF_HEARTS);
 		given(sessionSupport.getCardDeckFromSession(session)).willReturn(cardDeck);
 
-		Map expectedParameters = new HashMap();
+		Map<String, Object> expectedParameters = new HashMap<>();
 		expectedParameters.put("gameAlreadyStarted", true);
 		expectedParameters.put("score", 11);
 		expectedParameters.put("handContainsAnAce", true);
@@ -130,7 +130,7 @@ public class PontoonGameActionsTest {
 		given(configuration.getTemplate("initialHandStillInPlay.ftl")).willReturn(template);
 
 		doAnswer((InvocationOnMock invocationOnMock) -> {
-			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			Writer writer = invocationOnMock.getArgument(1, Writer.class);
 			writer.append("The initial deal content");
 			return null;
 		}).when(template).process(eq(expectedParameters), any(Writer.class));
@@ -162,7 +162,7 @@ public class PontoonGameActionsTest {
 		CardDeck cardDeck = cardDeck(ACE_OF_CLUBS, ACE_OF_SPADES);
 		given(sessionSupport.getCardDeckFromSession(session)).willReturn(cardDeck);
 
-		Map expectedParameters = new HashMap();
+		Map<String, Object> expectedParameters = new HashMap<>();
 		expectedParameters.put("gameAlreadyStarted", true);
 		expectedParameters.put("score", 22);
 		expectedParameters.put("handContainsAnAce", true);
@@ -173,7 +173,7 @@ public class PontoonGameActionsTest {
 		given(configuration.getTemplate("initialHandBust.ftl")).willReturn(template);
 
 		doAnswer((InvocationOnMock invocationOnMock) -> {
-			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			Writer writer = invocationOnMock.getArgument(1, Writer.class);
 			writer.append("The initial deal content");
 			return null;
 		}).when(template).process(eq(expectedParameters), any(Writer.class));
@@ -203,7 +203,7 @@ public class PontoonGameActionsTest {
 		CardDeck cardDeck = cardDeck(ACE_OF_CLUBS, QUEEN_OF_HEARTS);
 		given(sessionSupport.getCardDeckFromSession(session)).willReturn(cardDeck);
 
-		Map expectedParameters = new HashMap();
+		Map<String, Object> expectedParameters = new HashMap<>();
 		expectedParameters.put("gameAlreadyStarted", true);
 		expectedParameters.put("score", 21);
 		expectedParameters.put("handContainsAnAce", true);
@@ -214,7 +214,7 @@ public class PontoonGameActionsTest {
 		given(configuration.getTemplate("initialHandWin.ftl")).willReturn(template);
 
 		doAnswer((InvocationOnMock invocationOnMock) -> {
-			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			Writer writer = invocationOnMock.getArgument(1, Writer.class);
 			writer.append("The initial deal content");
 			return null;
 		}).when(template).process(eq(expectedParameters), any(Writer.class));
@@ -247,7 +247,7 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(FIVE_OF_CLUBS, QUEEN_OF_HEARTS);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		Map expectedParameters = new HashMap();
+		Map<String, Object> expectedParameters = new HashMap<>();
 		expectedParameters.put("gameAlreadyStarted", true);
 		expectedParameters.put("score", 17);
 		expectedParameters.put("handContainsAnAce", false);
@@ -258,7 +258,7 @@ public class PontoonGameActionsTest {
 		given(configuration.getTemplate("handStillInPlay.ftl")).willReturn(template);
 
 		doAnswer((InvocationOnMock invocationOnMock) -> {
-			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			Writer writer = invocationOnMock.getArgument(1, Writer.class);
 			writer.append("The twist content");
 			return null;
 		}).when(template).process(eq(expectedParameters), any(Writer.class));
@@ -293,7 +293,7 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(FIVE_OF_CLUBS, QUEEN_OF_HEARTS);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		Map expectedParameters = new HashMap();
+		Map<String, Object> expectedParameters = new HashMap<>();
 		expectedParameters.put("gameAlreadyStarted", true);
 		expectedParameters.put("score", 16);
 		expectedParameters.put("handContainsAnAce", true);
@@ -304,7 +304,7 @@ public class PontoonGameActionsTest {
 		given(configuration.getTemplate("handStillInPlay.ftl")).willReturn(template);
 
 		doAnswer((InvocationOnMock invocationOnMock) -> {
-			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			Writer writer = invocationOnMock.getArgument(1, Writer.class);
 			writer.append("The twist content");
 			return null;
 		}).when(template).process(eq(expectedParameters), any(Writer.class));
@@ -339,7 +339,7 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(FIVE_OF_CLUBS, TWO_OF_SPADES);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		Map expectedParameters = new HashMap();
+		Map<String, Object> expectedParameters = new HashMap<>();
 		expectedParameters.put("gameAlreadyStarted", true);
 		expectedParameters.put("score", 18);
 		expectedParameters.put("handContainsAnAce", true);
@@ -350,7 +350,7 @@ public class PontoonGameActionsTest {
 		given(configuration.getTemplate("handStillInPlay.ftl")).willReturn(template);
 
 		doAnswer((InvocationOnMock invocationOnMock) -> {
-			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			Writer writer = invocationOnMock.getArgument(1, Writer.class);
 			writer.append("The twist content");
 			return null;
 		}).when(template).process(eq(expectedParameters), any(Writer.class));
@@ -385,7 +385,7 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(TEN_OF_HEARTS, QUEEN_OF_HEARTS);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		Map expectedParameters = new HashMap();
+		Map<String, Object> expectedParameters = new HashMap<>();
 		expectedParameters.put("gameAlreadyStarted", true);
 		expectedParameters.put("score", 21);
 		expectedParameters.put("handContainsAnAce", true);
@@ -396,7 +396,7 @@ public class PontoonGameActionsTest {
 		given(configuration.getTemplate("win.ftl")).willReturn(template);
 
 		doAnswer((InvocationOnMock invocationOnMock) -> {
-			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			Writer writer = invocationOnMock.getArgument(1, Writer.class);
 			writer.append("The twist content");
 			return null;
 		}).when(template).process(eq(expectedParameters), any(Writer.class));
@@ -429,7 +429,7 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(FIVE_OF_CLUBS, TWO_OF_SPADES, THREE_OF_SPADES);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		Map expectedParameters = new HashMap();
+		Map<String, Object> expectedParameters = new HashMap<>();
 		expectedParameters.put("gameAlreadyStarted", true);
 		expectedParameters.put("score", 21);
 		expectedParameters.put("handContainsAnAce", true);
@@ -440,7 +440,7 @@ public class PontoonGameActionsTest {
 		given(configuration.getTemplate("win.ftl")).willReturn(template);
 
 		doAnswer((InvocationOnMock invocationOnMock) -> {
-			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			Writer writer = invocationOnMock.getArgument(1, Writer.class);
 			writer.append("The twist content");
 			return null;
 		}).when(template).process(eq(expectedParameters), any(Writer.class));
@@ -473,7 +473,7 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(FIVE_OF_CLUBS, SIX_OF_CLUBS);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		Map expectedParameters = new HashMap();
+		Map<String, Object> expectedParameters = new HashMap<>();
 		expectedParameters.put("gameAlreadyStarted", true);
 		expectedParameters.put("score", 21);
 		expectedParameters.put("handContainsAnAce", false);
@@ -484,7 +484,7 @@ public class PontoonGameActionsTest {
 		given(configuration.getTemplate("win.ftl")).willReturn(template);
 
 		doAnswer((InvocationOnMock invocationOnMock) -> {
-			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			Writer writer = invocationOnMock.getArgument(1, Writer.class);
 			writer.append("The twist content");
 			return null;
 		}).when(template).process(eq(expectedParameters), any(Writer.class));
@@ -517,7 +517,7 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(TEN_OF_HEARTS, FIVE_OF_CLUBS, SIX_OF_CLUBS);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		Map expectedParameters = new HashMap();
+		Map<String, Object> expectedParameters = new HashMap<>();
 		expectedParameters.put("gameAlreadyStarted", true);
 		expectedParameters.put("score", 22);
 		expectedParameters.put("handContainsAnAce", true);
@@ -528,7 +528,7 @@ public class PontoonGameActionsTest {
 		given(configuration.getTemplate("bust.ftl")).willReturn(template);
 
 		doAnswer((InvocationOnMock invocationOnMock) -> {
-			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			Writer writer = invocationOnMock.getArgument(1, Writer.class);
 			writer.append("The bust content");
 			return null;
 		}).when(template).process(eq(expectedParameters), any(Writer.class));
@@ -561,7 +561,7 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(FIVE_OF_CLUBS, TEN_OF_HEARTS);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		Map expectedParameters = new HashMap();
+		Map<String, Object> expectedParameters = new HashMap<>();
 		expectedParameters.put("gameAlreadyStarted", true);
 		expectedParameters.put("score", 26);
 		expectedParameters.put("handContainsAnAce", true);
@@ -572,7 +572,7 @@ public class PontoonGameActionsTest {
 		given(configuration.getTemplate("bust.ftl")).willReturn(template);
 
 		doAnswer((InvocationOnMock invocationOnMock) -> {
-			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			Writer writer = invocationOnMock.getArgument(1, Writer.class);
 			writer.append("The bust content");
 			return null;
 		}).when(template).process(eq(expectedParameters), any(Writer.class));
@@ -605,7 +605,7 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(FIVE_OF_CLUBS, TEN_OF_HEARTS);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		Map expectedParameters = new HashMap();
+		Map<String, Object> expectedParameters = new HashMap<>();
 		expectedParameters.put("gameAlreadyStarted", true);
 		expectedParameters.put("score", 25);
 		expectedParameters.put("handContainsAnAce", false);
@@ -616,7 +616,7 @@ public class PontoonGameActionsTest {
 		given(configuration.getTemplate("bust.ftl")).willReturn(template);
 
 		doAnswer((InvocationOnMock invocationOnMock) -> {
-			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			Writer writer = invocationOnMock.getArgument(1, Writer.class);
 			writer.append("The bust content");
 			return null;
 		}).when(template).process(eq(expectedParameters), any(Writer.class));
@@ -646,7 +646,7 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(FIVE_OF_CLUBS, ACE_OF_CLUBS);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		Map expectedParameters = new HashMap();
+		Map<String, Object> expectedParameters = new HashMap<>();
 		expectedParameters.put("gameAlreadyStarted", true);
 		expectedParameters.put("score", 6);
 		expectedParameters.put("handContainsAnAce", true);
@@ -657,7 +657,7 @@ public class PontoonGameActionsTest {
 		given(configuration.getTemplate("stick.ftl")).willReturn(template);
 
 		doAnswer((InvocationOnMock invocationOnMock) -> {
-			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			Writer writer = invocationOnMock.getArgument(1, Writer.class);
 			writer.append("The stick content");
 			return null;
 		}).when(template).process(eq(expectedParameters), any(Writer.class));
@@ -685,7 +685,7 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(FIVE_OF_CLUBS, ACE_OF_CLUBS);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		Map expectedParameters = new HashMap();
+		Map<String, Object> expectedParameters = new HashMap<>();
 		expectedParameters.put("gameAlreadyStarted", true);
 		expectedParameters.put("score", 16);
 		expectedParameters.put("handContainsAnAce", true);
@@ -696,7 +696,7 @@ public class PontoonGameActionsTest {
 		given(configuration.getTemplate("stick.ftl")).willReturn(template);
 
 		doAnswer((InvocationOnMock invocationOnMock) -> {
-			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			Writer writer = invocationOnMock.getArgument(1, Writer.class);
 			writer.append("The stick content");
 			return null;
 		}).when(template).process(eq(expectedParameters), any(Writer.class));
@@ -724,7 +724,7 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(FIVE_OF_CLUBS, TEN_OF_HEARTS);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		Map expectedParameters = new HashMap();
+		Map<String, Object> expectedParameters = new HashMap<>();
 		expectedParameters.put("gameAlreadyStarted", true);
 		expectedParameters.put("score", 15);
 		expectedParameters.put("handContainsAnAce", false);
@@ -735,7 +735,7 @@ public class PontoonGameActionsTest {
 		given(configuration.getTemplate("stick.ftl")).willReturn(template);
 
 		doAnswer((InvocationOnMock invocationOnMock) -> {
-			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			Writer writer = invocationOnMock.getArgument(1, Writer.class);
 			writer.append("The stick content");
 			return null;
 		}).when(template).process(eq(expectedParameters), any(Writer.class));
@@ -757,7 +757,7 @@ public class PontoonGameActionsTest {
 	@Test
 	public void shouldDetermineIsGameAlreadyStartedGivenAllRequiredSessionAttributes() {
 		// Given
-		Session session = session();
+		Session session = mock(Session.class);
 		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(true);
 
 		CardDeck cardDeck = cardDeck(QUEEN_OF_HEARTS);
@@ -776,9 +776,7 @@ public class PontoonGameActionsTest {
 	@Test
 	public void shouldDetermineIsGameAlreadyStartedGivenNoRequiredAttributes() {
 		// Given
-		Session session = session();
-		given(sessionSupport.getAceIsHighFromSession(session)).willReturn(null);
-		given(sessionSupport.getCardDeckFromSession(session)).willReturn(null);
+		Session session = mock(Session.class);
 		given(sessionSupport.getHandFromSession(session)).willReturn(null);
 
 		// When
@@ -795,7 +793,7 @@ public class PontoonGameActionsTest {
 		Template template = mock(Template.class);
 		given(configuration.getTemplate("help.ftl")).willReturn(template);
 
-		Map expectedParameters = new HashMap();
+		Map<String, Object> expectedParameters = new HashMap<>();
 		expectedParameters.put("gameAlreadyStarted", false);
 		expectedParameters.put("score", 0);
 		expectedParameters.put("handContainsAnAce", false);
@@ -803,7 +801,7 @@ public class PontoonGameActionsTest {
 		expectedParameters.put("aceIsHigh", false);
 
 		doAnswer((InvocationOnMock invocationOnMock) -> {
-			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			Writer writer = invocationOnMock.getArgument(1, Writer.class);
 			writer.append("The help content");
 			return null;
 		}).when(template).process(eq(expectedParameters), any(Writer.class));
@@ -828,7 +826,7 @@ public class PontoonGameActionsTest {
 		Template template = mock(Template.class);
 		given(configuration.getTemplate("stop.ftl")).willReturn(template);
 
-		Map expectedParameters = new HashMap();
+		Map<String, Object> expectedParameters = new HashMap<>();
 		expectedParameters.put("gameAlreadyStarted", false);
 		expectedParameters.put("score", 0);
 		expectedParameters.put("handContainsAnAce", false);
@@ -836,7 +834,7 @@ public class PontoonGameActionsTest {
 		expectedParameters.put("aceIsHigh", false);
 
 		doAnswer((InvocationOnMock invocationOnMock) -> {
-			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			Writer writer = invocationOnMock.getArgument(1, Writer.class);
 			writer.append("The stop content");
 			return null;
 		}).when(template).process(eq(expectedParameters), any(Writer.class));
@@ -864,7 +862,7 @@ public class PontoonGameActionsTest {
 		Hand hand = hand(FIVE_OF_CLUBS, TEN_OF_HEARTS);
 		given(sessionSupport.getHandFromSession(session)).willReturn(hand);
 
-		Map expectedParameters = new HashMap();
+		Map<String, Object> expectedParameters = new HashMap<>();
 		expectedParameters.put("gameAlreadyStarted", true);
 		expectedParameters.put("score", 15);
 		expectedParameters.put("handContainsAnAce", false);
@@ -875,7 +873,7 @@ public class PontoonGameActionsTest {
 		given(configuration.getTemplate("stick.ftl")).willReturn(template);
 
 		doAnswer((InvocationOnMock invocationOnMock) -> {
-			Writer writer = invocationOnMock.getArgumentAt(1, Writer.class);
+			Writer writer = invocationOnMock.getArgument(1, Writer.class);
 			writer.append("The stick content");
 			return null;
 		}).when(template).process(eq(expectedParameters), any(Writer.class));
@@ -902,11 +900,20 @@ public class PontoonGameActionsTest {
 
 	private CardDeck cardDeck(final Card... cards) {
 		CardDeck cardDeck = new CardDeck();
-		setInternalState(cardDeck, "cards", new ArrayList(Arrays.asList(cards)));
+
+		try {
+			Field field = CardDeck.class.getDeclaredField("cards");
+			field.setAccessible(true);
+			field.set(cardDeck, new ArrayList<>(Arrays.asList(cards)));
+		}
+		catch (IllegalAccessException | NoSuchFieldException e) {
+			throw new RuntimeException("Error setting cards on CardDeck");
+		}
+
 		return cardDeck;
 	}
 
 	private Hand hand(final Card... cards) {
-		return new Hand(new ArrayList(Arrays.asList(cards)));
+		return new Hand(new ArrayList<>(Arrays.asList(cards)));
 	}
 }

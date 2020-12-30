@@ -2,13 +2,13 @@ package uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.handler;
 
 import static com.amazon.speech.speechlet.SpeechletResponse.newTellResponse;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static uk.co.claritysoftware.alexa.skills.testsupport.SpeechletRequestEnvelopeTestDataFactory.speechletRequestEnvelopeWithIntentName;
 import static uk.co.claritysoftware.alexa.skills.kit.test.assertj.SpeechletResponseAssert.assertThat;
+import static uk.co.claritysoftware.alexa.skills.testsupport.SpeechletRequestEnvelopeTestDataFactory.speechletRequestEnvelopeWithIntentName;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import com.amazon.speech.json.SpeechletRequestEnvelope;
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
@@ -59,15 +59,11 @@ public class MidGameIntentHandlerTest {
 		MidGameIntentHandler intentHandler = new TestIntentHandler(pontoonGameActions);
 
 		// When
-		try {
-			intentHandler.handleIntent(requestEnvelope);
+		Throwable e = catchThrowable(() -> intentHandler.handleIntent(requestEnvelope));
 
-			fail("Was expecting a GameNotStartedException");
-		}
 		// Then
-		catch (Exception e) {
-			assertThat(e.getClass()).isEqualTo(GameNotStartedException.class);
-		}
+		assertThat(e)
+				.isInstanceOf(GameNotStartedException.class);
 	}
 
 	/**

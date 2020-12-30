@@ -1,14 +1,14 @@
 package uk.co.claritysoftware.alexa.skills.pontoon.speech;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 import java.util.Collections;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.PontoonIntent;
 import uk.co.claritysoftware.alexa.skills.speech.intent.IntentHandler;
 
@@ -25,7 +25,7 @@ public class HandlerFactoryTest {
 
 	private IntentHandler intentHandler;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		launchHandler = mock(LaunchHandler.class);
 		intentHandler = mock(IntentHandler.class);
@@ -65,15 +65,12 @@ public class HandlerFactoryTest {
 		given(intentHandler.handles(pontoonIntent)).willReturn(false);
 
 		// When
-		try {
-			handlerFactory.getIntentHandlerForIntent(pontoonIntent);
+		Throwable e = catchThrowable(() -> handlerFactory.getIntentHandlerForIntent(pontoonIntent));
 
-			fail("Was expecting an IllegalArgumentException");
-		}
 		// Then
-		catch (IllegalArgumentException e) {
-			assertThat(e.getMessage()).isEqualTo("No intent handler registered for START_GAME_INTENT");
-		}
+		assertThat(e)
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("No intent handler registered for START_GAME_INTENT");
 	}
 
 }

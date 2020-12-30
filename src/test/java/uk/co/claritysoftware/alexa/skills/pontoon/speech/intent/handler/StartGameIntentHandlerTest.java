@@ -1,7 +1,7 @@
 package uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.handler;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.co.claritysoftware.alexa.skills.testsupport.SpeechletRequestEnvelopeTestDataFactory.speechletRequestEnvelopeWithIntentName;
@@ -9,11 +9,11 @@ import static uk.co.claritysoftware.alexa.skills.testsupport.SpeechletRequestEnv
 
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import com.amazon.speech.json.SpeechletRequestEnvelope;
 import com.amazon.speech.slu.Slot;
 import com.amazon.speech.speechlet.IntentRequest;
@@ -26,7 +26,7 @@ import uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.PontoonIntent;
 /**
  * Unit test class for {@link StartGameIntentHandler}
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class StartGameIntentHandlerTest {
 
 	@Mock
@@ -97,15 +97,11 @@ public class StartGameIntentHandlerTest {
 		given(pontoonGameActions.isGameAlreadyStarted(session)).willReturn(true);
 
 		// When
-		try {
-			intentHandler.handleIntent(requestEnvelope);
+		Throwable e = catchThrowable(() -> intentHandler.handleIntent(requestEnvelope));
 
-			fail("Was expecting a GameAlreadyStartedException");
-		}
 		// Then
-		catch (Exception e) {
-			assertThat(e.getClass()).isEqualTo(GameAlreadyStartedException.class);
-		}
+		assertThat(e)
+				.isInstanceOf(GameAlreadyStartedException.class);
 	}
 
 	@Test

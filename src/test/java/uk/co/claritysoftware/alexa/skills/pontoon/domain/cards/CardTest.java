@@ -2,12 +2,8 @@ package uk.co.claritysoftware.alexa.skills.pontoon.domain.cards;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.Card;
-import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardSuit;
-import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardValue;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 

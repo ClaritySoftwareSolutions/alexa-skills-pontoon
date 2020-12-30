@@ -32,22 +32,22 @@ public class SpeechletRequestEnvelopeTestDataFactory<T extends SpeechletRequest>
 		return new SpeechletRequestEnvelopeTestDataFactory<T>();
 	}
 
-	public SpeechletRequestEnvelopeTestDataFactory withVersion(String version) {
+	public SpeechletRequestEnvelopeTestDataFactory<T> withVersion(String version) {
 		this.version = version;
 		return this;
 	}
 
-	public SpeechletRequestEnvelopeTestDataFactory withContext(Context context) {
+	public SpeechletRequestEnvelopeTestDataFactory<T> withContext(Context context) {
 		this.context = context;
 		return this;
 	}
 
-	public SpeechletRequestEnvelopeTestDataFactory withSession(Session session) {
+	public SpeechletRequestEnvelopeTestDataFactory<T> withSession(Session session) {
 		this.session = session;
 		return this;
 	}
 
-	public SpeechletRequestEnvelopeTestDataFactory withRequest(T request) {
+	public SpeechletRequestEnvelopeTestDataFactory<T> withRequest(T request) {
 		this.request = request;
 		return this;
 	}
