@@ -6,6 +6,7 @@ import static uk.co.claritysoftware.alexa.skills.testsupport.SpeechletRequestEnv
 import static uk.co.claritysoftware.alexa.skills.testsupport.SpeechletRequestEnvelopeTestDataFactory.sessionStartedSpeechletRequestEnvelope;
 
 import java.util.regex.Pattern;
+import javax.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.amazon.speech.json.SpeechletRequestEnvelope;
@@ -13,17 +14,17 @@ import com.amazon.speech.speechlet.LaunchRequest;
 import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SessionStartedRequest;
 import com.amazon.speech.speechlet.SpeechletResponse;
-import uk.co.claritysoftware.alexa.skills.pontoon.dagger.DaggerPontoonComponent;
-import uk.co.claritysoftware.alexa.skills.pontoon.dagger.PontoonComponent;
+
+import io.quarkus.test.junit.QuarkusTest;
 
 /**
  * Integration test class for {@link PontoonSpeechlet}
  */
+@QuarkusTest
 public class PontoonSpeechletIT {
 
-	private final PontoonComponent pontoonComponent = DaggerPontoonComponent.create();
-
-	private final PontoonSpeechlet pontoonSpeechlet = pontoonComponent.buildPontoonSpeechlet();
+	@Inject
+	private PontoonSpeechlet pontoonSpeechlet;
 
 	private Session session;
 

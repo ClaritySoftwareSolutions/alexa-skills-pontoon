@@ -4,7 +4,7 @@
 	<groupId>uk.co.claritysoftware</groupId>
 	<artifactId>alexa-skills-pontoon</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.4-SNAPSHOT</version>
+	<version>2.0.0-SNAPSHOT</version>
 
 	<name>Alexa Pontoon Game Skill</name>
 	<description>Alexa Skill written in Java to play the card game Pontoon</description>
@@ -16,7 +16,6 @@
 
 		<quarkus.version>1.10.5.Final</quarkus.version>
 
-		<dagger.version>2.23.1</dagger.version>
 		<freemarker.version>2.3.23</freemarker.version>
 
 		<alexa-skills-kit.version>1.3.1</alexa-skills-kit.version>
@@ -56,9 +55,8 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.google.dagger</groupId>
-			<artifactId>dagger</artifactId>
-			<version>${dagger.version}</version>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-arc</artifactId>
 		</dependency>
 
 		<dependency>
@@ -189,11 +187,6 @@
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
 							<version>${lombok-version}</version>
-						</path>
-						<path>
-							<groupId>com.google.dagger</groupId>
-							<artifactId>dagger-compiler</artifactId>
-							<version>${dagger.version}</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>

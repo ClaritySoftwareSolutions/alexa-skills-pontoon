@@ -5,8 +5,8 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.stream.Stream;
+import javax.enterprise.inject.Instance;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.PontoonIntent;
@@ -21,7 +21,7 @@ public class HandlerFactoryTest {
 
 	private LaunchHandler launchHandler;
 
-	private List<IntentHandler> intentHandlers;
+	private Instance<IntentHandler> intentHandlers;
 
 	private IntentHandler intentHandler;
 
@@ -29,7 +29,8 @@ public class HandlerFactoryTest {
 	public void setup() {
 		launchHandler = mock(LaunchHandler.class);
 		intentHandler = mock(IntentHandler.class);
-		intentHandlers = Collections.singletonList(intentHandler);
+		intentHandlers = mock(Instance.class);
+		given(intentHandlers.stream()).willReturn(Stream.of(intentHandler));
 		handlerFactory = new HandlerFactory(launchHandler, intentHandlers);
 	}
 

@@ -1,5 +1,6 @@
 package uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.handler;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import uk.co.claritysoftware.alexa.skills.speech.intent.IntentHandler;
 /**
  * {@link IntentHandler} for the Twist intent
  */
+@ApplicationScoped
 public class TwistIntentHandler extends MidGameIntentHandler {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TwistIntentHandler.class);

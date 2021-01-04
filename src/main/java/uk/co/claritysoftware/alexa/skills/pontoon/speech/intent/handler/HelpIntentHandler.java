@@ -1,5 +1,6 @@
 package uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.handler;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import uk.co.claritysoftware.alexa.skills.speech.intent.IntentHandler;
 /**
  * {@link IntentHandler} for the Help intent
  */
+@ApplicationScoped
 public class HelpIntentHandler implements IntentHandler {
 
 	private static final Logger LOG = LoggerFactory.getLogger(HelpIntentHandler.class);

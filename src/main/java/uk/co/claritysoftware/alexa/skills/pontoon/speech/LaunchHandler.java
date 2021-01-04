@@ -1,5 +1,6 @@
 package uk.co.claritysoftware.alexa.skills.pontoon.speech;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import uk.co.claritysoftware.alexa.skills.pontoon.session.SessionSupport;
 /**
  * Class proving a method to handle the launch event
  */
+@ApplicationScoped
 public class LaunchHandler {
 
 	private static final Logger LOG = LoggerFactory.getLogger(LaunchHandler.class);

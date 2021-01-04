@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import uk.co.claritysoftware.alexa.skills.pontoon.speech.PontoonSpeechlet;
 
 /**
  * Unit test class for {@link PontoonRequestStreamHandler}
@@ -16,6 +18,9 @@ import org.junit.jupiter.api.Test;
 public class PontoonRequestStreamHandlerTest {
 
 	private static final String APPLICATION_IDS = "com_amazon_speech_speechlet_servlet_supportedApplicationIds";
+
+	@Mock
+	private PontoonSpeechlet pontoonSpeechlet;
 
 	@Test
 	public void shouldConstructGivenSingleApplicationId() throws Exception {
@@ -25,7 +30,7 @@ public class PontoonRequestStreamHandlerTest {
 			Set<String> expectedApplicationIds = Stream.of("1234").collect(Collectors.toSet());
 
 			// When
-			PontoonRequestStreamHandler handler = new PontoonRequestStreamHandler();
+			PontoonRequestStreamHandler handler = new PontoonRequestStreamHandler(pontoonSpeechlet);
 
 			// Then
 			assertThat(handler).hasApplicationIds(expectedApplicationIds);
@@ -39,7 +44,7 @@ public class PontoonRequestStreamHandlerTest {
 			Set<String> expectedApplicationIds = Stream.of("1234", "5678").collect(Collectors.toSet());
 
 			// When
-			PontoonRequestStreamHandler handler = new PontoonRequestStreamHandler();
+			PontoonRequestStreamHandler handler = new PontoonRequestStreamHandler(pontoonSpeechlet);
 
 			// Then
 			assertThat(handler).hasApplicationIds(expectedApplicationIds);
@@ -53,7 +58,7 @@ public class PontoonRequestStreamHandlerTest {
 			Set<String> expectedApplicationIds = Stream.of("1234", "5678", "9012").collect(Collectors.toSet());
 
 			// When
-			PontoonRequestStreamHandler handler = new PontoonRequestStreamHandler();
+			PontoonRequestStreamHandler handler = new PontoonRequestStreamHandler(pontoonSpeechlet);
 
 			// Then
 			assertThat(handler).hasApplicationIds(expectedApplicationIds);
@@ -65,7 +70,7 @@ public class PontoonRequestStreamHandlerTest {
 		// Given
 
 		// When
-		Throwable e = catchThrowable(() -> new PontoonRequestStreamHandler());
+		Throwable e = catchThrowable(() -> new PontoonRequestStreamHandler(pontoonSpeechlet));
 
 		// Then
 		assertThat(e)
@@ -79,7 +84,7 @@ public class PontoonRequestStreamHandlerTest {
 			// Given
 
 			// When
-			Throwable e = catchThrowable(() -> new PontoonRequestStreamHandler());
+			Throwable e = catchThrowable(() -> new PontoonRequestStreamHandler(pontoonSpeechlet));
 
 			// Then
 			assertThat(e)
@@ -94,7 +99,7 @@ public class PontoonRequestStreamHandlerTest {
 			// Given
 
 			// When
-			Throwable e = catchThrowable(() -> new PontoonRequestStreamHandler());
+			Throwable e = catchThrowable(() -> new PontoonRequestStreamHandler(pontoonSpeechlet));
 
 			// Then
 			assertThat(e)

@@ -1,5 +1,6 @@
 package uk.co.claritysoftware.alexa.skills.pontoon.speech;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import uk.co.claritysoftware.alexa.skills.speech.AbstractSpeechlet;
 /**
  * Pontoon implementation of {@link SpeechletV2}
  */
+@ApplicationScoped
 public class PontoonSpeechlet extends AbstractSpeechlet {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PontoonSpeechlet.class);

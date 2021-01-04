@@ -20,6 +20,10 @@ public abstract class MidGameIntentHandler implements IntentHandler {
 
 	protected final PontoonGameActions pontoonGameActions;
 
+	protected MidGameIntentHandler() {
+		pontoonGameActions = null;
+	}
+
 	public MidGameIntentHandler(final PontoonGameActions pontoonGameActions) {
 		this.pontoonGameActions = pontoonGameActions;
 	}

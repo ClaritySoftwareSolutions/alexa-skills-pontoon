@@ -2,20 +2,21 @@ package uk.co.claritysoftware.alexa.skills.pontoon.speech;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import javax.inject.Inject;
 import org.junit.jupiter.api.Test;
-import uk.co.claritysoftware.alexa.skills.pontoon.dagger.DaggerPontoonComponent;
-import uk.co.claritysoftware.alexa.skills.pontoon.dagger.PontoonComponent;
 import uk.co.claritysoftware.alexa.skills.pontoon.speech.intent.PontoonIntent;
 import uk.co.claritysoftware.alexa.skills.speech.intent.IntentHandler;
+
+import io.quarkus.test.junit.QuarkusTest;
 
 /**
  * Integration test class for {@link HandlerFactory}
  */
+@QuarkusTest
 public class HandlerFactoryIT {
 
-	private final PontoonComponent pontoonComponent = DaggerPontoonComponent.create();
-
-	private final HandlerFactory handlerFactory = pontoonComponent.buildHandlerFactory();
+	@Inject
+	private HandlerFactory handlerFactory;
 
 	@Test
 	public void shouldGetLaunchHandler() {

@@ -7,6 +7,7 @@ import static uk.co.claritysoftware.alexa.skills.testsupport.SpeechletRequestEnv
 
 import java.util.Arrays;
 import java.util.regex.Pattern;
+import javax.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.amazon.speech.json.SpeechletRequestEnvelope;
@@ -15,8 +16,6 @@ import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SessionStartedRequest;
 import com.amazon.speech.speechlet.SpeechletResponse;
-import uk.co.claritysoftware.alexa.skills.pontoon.dagger.DaggerPontoonComponent;
-import uk.co.claritysoftware.alexa.skills.pontoon.dagger.PontoonComponent;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.Hand;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.Card;
 import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardSuit;
@@ -24,16 +23,19 @@ import uk.co.claritysoftware.alexa.skills.pontoon.domain.cards.CardValue;
 import uk.co.claritysoftware.alexa.skills.pontoon.session.SessionSupport;
 import uk.co.claritysoftware.alexa.skills.pontoon.speech.PontoonSpeechlet;
 
+import io.quarkus.test.junit.QuarkusTest;
+
 /**
  * Integration test to assert flow and state control
  */
+@QuarkusTest
 public class StateControlIT {
 
-	private final PontoonComponent pontoonComponent = DaggerPontoonComponent.create();
+	@Inject
+	private PontoonSpeechlet pontoonSpeechlet;
 
-	private final PontoonSpeechlet pontoonSpeechlet = pontoonComponent.buildPontoonSpeechlet();
-
-	private final SessionSupport sessionSupport = pontoonComponent.buildSessionSupport();
+	@Inject
+	private SessionSupport sessionSupport;
 
 	private Session session;
 
